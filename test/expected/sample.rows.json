@@ -1,92 +1,106 @@
 [
   {
     "date": "2015-04-06T23:00:00.000Z",
-    "status": "debit",
+    "yyyymmdd": "2015-04-07",
+    "status": "DEBIT",
+    "amount": "128.90",
     "debit": "128.90",
     "credit": "",
-    "description": "DIRECT DEBIT PAYMENT TO LTD CAMDEN DI REF CA/1977 MANDATE NO 0003 128.90",
+    "description": "Direct debit payment to ltd camden di ref ca/1977 mandate no 0003 128.90",
     "category": {
       "name": "Rent",
       "title": "Office rent",
-      "category": "debit"
+      "category": "DEBIT"
     },
     "about": "space 2"
   },
   {
     "date": "2015-04-03T23:00:00.000Z",
-    "status": "debit",
+    "yyyymmdd": "2015-04-04",
+    "status": "DEBIT",
+    "amount": "2.75",
     "debit": "2.75",
     "credit": "",
-    "description": "CARD PAYMENT TO GOOGLE 2.75 GBP ON 02-04-2015 2.75",
+    "description": "Card payment to google 2.75 gbp on 02-04-2015 2.75",
     "category": {
       "name": "Administration",
       "title": "General Administration",
-      "category": "debit"
+      "category": "DEBIT"
     },
     "about": "Google"
   },
   {
     "date": "2015-03-29T23:00:00.000Z",
-    "status": "credit",
+    "yyyymmdd": "2015-03-30",
+    "status": "CREDIT",
+    "amount": "0.02",
     "debit": "",
     "credit": "0.02",
-    "description": "INTEREST PAID AFTER TAX 0.00 DEDUCTED 0.02",
+    "description": "Interest paid after tax 0.00 deducted 0.02",
     "category": {
       "name": "Interest",
       "title": "Interest",
-      "category": "credit"
+      "category": "CREDIT"
     },
-    "about": "INTEREST"
+    "about": "Interest"
   },
   {
     "date": "2015-03-25T00:00:00.000Z",
-    "status": "debit",
+    "yyyymmdd": "2015-03-25",
+    "status": "DEBIT",
+    "amount": "234.13",
     "debit": "234.13",
     "credit": "",
-    "description": "DIRECT DEBIT PAYMENT TO LTD-MANAGEMENT REF 0000001 MANDATE NO 0002 234.13",
+    "description": "Direct debit payment to ltd-management ref 0000001 mandate no 0002 234.13",
     "category": {
       "name": "Rent",
       "title": "Office rent",
-      "category": "debit"
+      "category": "DEBIT"
     },
     "about": "space 1"
   },
   {
     "date": "2015-03-20T00:00:00.000Z",
-    "status": "credit",
+    "yyyymmdd": "2015-03-20",
+    "status": "CREDIT",
+    "amount": "250.00",
     "debit": "",
     "credit": "250.00",
-    "description": "FASTER PAYMENTS RECEIPT REF.SHARES FROM DIRECTOR 250.00",
+    "description": "Faster payments receipt ref.shares from director 250.00",
     "category": {
       "name": "Shares",
       "title": "Shares",
-      "column": "credit"
+      "category": "CREDIT"
     },
-    "about": "CAP"
+    "about": "Cap"
   },
   {
     "date": "2015-03-18T00:00:00.000Z",
-    "status": "debit",
+    "yyyymmdd": "2015-03-18",
+    "status": "DEBIT",
+    "amount": "28.78",
     "debit": "28.78",
     "credit": "",
-    "description": "CARD PAYMENT TO LTD R/T 28.78 GBP ON 16-03-2015 28.78",
+    "description": "Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78",
     "category": {
       "name": "Administration",
       "title": "General Administration",
-      "category": "debit"
+      "category": "DEBIT"
     },
     "about": "stuff"
   },
   {
     "date": "2015-03-10T00:00:00.000Z",
-    "status": "debit",
+    "yyyymmdd": "2015-03-10",
+    "status": "DEBIT",
+    "amount": "13.00",
     "debit": "13.00",
     "credit": "",
-    "description": "CARD PAYMENT TO COMPANIES HOUSE 13.00 GBP ON 08-03-2015 13.00",
+    "description": "Card payment to companies house 13.00 gbp on 08-03-2015 13.00",
     "category": {
       "name": "Legal",
       "title": "Legal/professional fees",
-      "category": "debit"
+      "category": "DEBIT"
     },
     "about": "contract"
   }

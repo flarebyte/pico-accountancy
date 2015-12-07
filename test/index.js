@@ -5,9 +5,9 @@ import moment from 'moment';
 import picoAccountancy from '../lib';
 
 const sampleQif = fs.readFileSync('test/fixtures/sample.qif').toString();
-const DEBIT = 'debit';
+const DEBIT = 'DEBIT';
 
-const CREDIT = 'credit';
+const CREDIT = 'CREDIT';
 
 const normalise = (data) => {
   const a = JSON.stringify(data);
@@ -17,8 +17,7 @@ const normalise = (data) => {
 const SHARES = {
   name: 'Shares',
   title: 'Shares',
-  column: CREDIT
-
+  category: CREDIT
 };
 
 const RENT = {
@@ -76,7 +75,7 @@ const INVOICE = {
   category: CREDIT
 };
 
-const allCategories = [RENT, INSURANCE, CASH, ADMIN, UTILS, LEGAL, INTEREST, INVOICE];
+const allCategories = [SHARES, RENT, INSURANCE, CASH, ADMIN, UTILS, LEGAL, INTEREST, INVOICE];
 
 const rules = [
   {
@@ -116,17 +115,17 @@ const rules = [
   },
   {
     ifContains: 'SHARES',
-    about: 'CAP',
+    about: 'Cap',
     category: SHARES
   },
   {
     ifContains: 'INTEREST',
-    about: 'INTEREST',
+    about: 'Interest',
     category: INTEREST
   },
   {
     ifContains: 'INVOICE',
-    about: 'INVOICE',
+    about: 'Invoice',
     category: INVOICE
   }
 ];
@@ -157,7 +156,7 @@ describe('pico-accountancy', function () {
   });
   it('should normalize the description!', function () {
     const actual = accountancy.normalizeDescription('PCARD PAYMENT TO LTD R/T,28.78 GBP ON 16-03-2015                                           , 28.78');
-    assert.equal(actual, 'CARD PAYMENT TO LTD R/T 28.78 GBP ON 16-03-2015 28.78');
+    assert.equal(actual, 'Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78');
   });
   it('should apply rules to description!', function () {
     const actual = accountancy.applyRulesToDescription('PCARD PAYMENT TO LTD Contract 789 R/T,28.78');
@@ -176,7 +175,8 @@ describe('pico-accountancy', function () {
     const expected = {
       status: DEBIT,
       credit: '',
-      debit: '2.75'
+      debit: '2.75',
+      amount: '2.75'
     };
     assert.deepEqual(actual, expected);
   });
@@ -185,7 +185,8 @@ describe('pico-accountancy', function () {
     const expected = {
       status: CREDIT,
       credit: '2.75',
-      debit: ''
+      debit: '',
+      amount: '2.75'
     };
     assert.deepEqual(actual, expected);
   });
@@ -194,7 +195,7 @@ describe('pico-accountancy', function () {
     const expected = {
       about: 'contract',
       category: LEGAL,
-      description: 'CARD PAYMENT TO LTD Contract 789 R/T 28.78 GBP ON 16-03-2015 28.78'
+      description: 'Card payment to ltd contract 789 r/t 28.78 gbp on 16-03-2015 28.78'
     };
     assert.deepEqual(actual, expected);
   });
@@ -220,8 +221,8 @@ describe('pico-accountancy', function () {
     assert.deepEqual(accountancy.makeDebitId(rowNoAbout), '14B-0004');
     assert.deepEqual(accountancy.makeDebitId(rowNoAbout2), '14L-0001');
     assert.deepEqual(accountancy.makeDebitId(rowNoAbout2), '14L-0002');
-    assert.deepEqual(accountancy.makeDebitId(rowAbout), '14A-0001-about');
-    assert.deepEqual(accountancy.makeDebitId(rowAbout), '14A-0002-about');
+    assert.deepEqual(accountancy.makeDebitId(rowAbout), '14A-0001-ABOUT');
+    assert.deepEqual(accountancy.makeDebitId(rowAbout), '14A-0002-ABOUT');
     accountancy.resetCounters();
   });
 
@@ -232,9 +233,9 @@ describe('pico-accountancy', function () {
       category: SHARES,
       about: 'about'
     };
-    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-about-03');
-    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-about-03-0002');
-    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-about-03-0003');
+    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-ABOUT-03');
+    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0002');
+    assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0003');
     accountancy.resetCounters();
   });
   it('should convert QIF content to rows!', function () {
@@ -254,4 +255,53 @@ describe('pico-accountancy', function () {
     assert.lengthOf(actual, 7);
     assert.deepEqual(normalise(actual), expected, JSON.stringify(actual));
   });
+
+  it('should convert QIF content to bank format!', function () {
+    const actual = accountancy.qifToBankCsv(sampleQif, [RENT.name, LEGAL.name, SHARES.name, INTEREST.name, INVOICE.name]);
+    const filename = 'test/expected/sample.rows.bank.csv';
+    //fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    assert.deepEqual(actual, expected);
+  });
+
+  it('should convert QIF content to expense group!', function () {
+    const actual = accountancy.qifToExpenseGroupCsv(sampleQif);
+    const filename = 'test/expected/sample.rows.group.csv';
+    //fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    assert.deepEqual(actual, expected);
+  });
+
+  it('should convert QIF content to expense summary!', function () {
+    const actual = accountancy.qifToExpenseSummaryCsv(sampleQif);
+    const filename = 'test/expected/sample.rows.expense.summary.csv';
+    //fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    assert.deepEqual(actual, expected);
+  });
+
+  it('should convert QIF content to expense summary!', function () {
+    const actual = accountancy.qifToCreditSummaryCsv(sampleQif);
+    const filename = 'test/expected/sample.rows.credit.summary.csv';
+    fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    assert.deepEqual(actual, expected);
+  });
+
+  it('should convert QIF content to expense total!', function () {
+    const actual = accountancy.qifToExpenseTotal(sampleQif);
+    assert.deepEqual(actual, 407.56);
+  });
+
+  it('should convert QIF content to credit total!', function () {
+    const actual = accountancy.qifToCreditTotal(sampleQif);
+    assert.deepEqual(actual, 250.02);
+  });
+
+  it('should convert QIF content to total by category!', function () {
+    const actual = accountancy.qifToTotalByCategory(sampleQif, INTEREST);
+    assert.deepEqual(actual, 0.02);
+  });
+
+
 });
