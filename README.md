@@ -3,17 +3,26 @@
 
 ## Installation
 
-```sh
-$ npm install --save pico-accountancy
-```
+Note: global install is not supported yet, just git clone the repository.
 
 ## Usage
 
-```js
-var picoAccountancy = require('pico-accountancy');
-
-picoAccountancy('Rainbow');
+### Create an alias to read the QIF file with bank statement
 ```
+alias bank='cat "statement.qif"'
+export DEST='/accountancy/2015'
+```
+
+Convert pound sign to GBP
+
+### Normalize the bank statement
+```
+bank | node dist/cli.js --target bank | grep -i todo
+
+bank | node dist/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices'
+```
+
+
 ## License
 
 MIT © [flarebyte](https://github.com/flarebyte)
