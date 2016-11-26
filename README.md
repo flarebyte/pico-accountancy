@@ -7,19 +7,47 @@ Note: global install is not supported yet, just git clone the repository.
 
 ## Usage
 
-### Create an alias to read the QIF file with bank statement
+### 0. Create an alias to read the QIF file with bank statement
 ```
-alias bank='cat "statement.qif"'
-export DEST='/accountancy/2015'
+alias bank='cat "path/to/file/statement.qif"'
+export DEST='path/to/file/accountancy/2015'
+export PERIOD='2014-2015.csv'
 ```
 
-Convert pound sign to GBP
+* Warning: *Convert pound sign to GBP*
+* Only select the wanted transactions from the qif file.
+* Make sure you have a valid conf.json in .pico-accountancy.
 
-### Normalize the bank statement
+### 1. Normalize the bank statement
+
+Verify that the qif file can be fully analysed. True if no line returned when typing:
 ```
 bank | node dist/cli.js --target bank | grep -i todo
+```
 
-bank | node dist/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices'
+Create a statement file in csv format.
+```
+bank | node dist/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices' > "$DEST/statements$PERIOD"
+```
+
+### 2. Creates other entries
+
+Creates a credit file:
+```
+bank | node dist/cli.js --target credit > "$DEST/credit-$PERIOD"
+```
+Creates a debit file:
+```
+bank | node dist/cli.js --target debit > "$DEST/debit-$PERIOD"
+```
+Creates a expenses file:
+```
+bank | node dist/cli.js --target expenses > "$DEST/expenses-$PERIOD"
+```
+
+Creates a total file:
+```
+bank | node dist/cli.js --target total > "$DEST/total-$PERIOD"
 ```
 
 
