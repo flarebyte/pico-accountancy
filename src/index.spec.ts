@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import moment from 'moment';
 import picoAccountancy from '../lib';
 
-const sampleQif = fs.readFileSync('test/fixtures/sample.qif').toString();
+const sampleQif = fs.readFileSync('data/fixtures/sample.qif').toString();
 const DEBIT = 'DEBIT';
 
 const CREDIT = 'CREDIT';
@@ -240,7 +240,7 @@ describe('pico-accountancy', function () {
   });
   it('should convert QIF content to rows!', function () {
     const actual = accountancy.qifToRows(sampleQif);
-    const filename = 'test/expected/sample.rows.json';
+    const filename = 'data/expected/sample.rows.json';
     //fs.writeJsonSync(filename, actual);
     const expected = fs.readJsonSync(filename);
     assert.lengthOf(actual, 7);
@@ -249,7 +249,7 @@ describe('pico-accountancy', function () {
 
   it('should convert QIF content to rows with ids!', function () {
     const actual = accountancy.qifToRowsWithIds(sampleQif);
-    const filename = 'test/expected/sample.rows-with-ids.json';
+    const filename = 'data/expected/sample.rows-with-ids.json';
     //fs.writeJsonSync(filename, actual);
     const expected = fs.readJsonSync(filename);
     assert.lengthOf(actual, 7);
@@ -258,7 +258,7 @@ describe('pico-accountancy', function () {
 
   it('should convert QIF content to bank format!', function () {
     const actual = accountancy.qifToBankCsv(sampleQif, [RENT.name, LEGAL.name, SHARES.name, INTEREST.name, INVOICE.name]);
-    const filename = 'test/expected/sample.rows.bank.csv';
+    const filename = 'data/expected/sample.rows.bank.csv';
     //fs.writeFileSync(filename, actual);
     const expected = fs.readFileSync(filename, {encoding: 'utf8'});
     assert.deepEqual(actual, expected);
@@ -266,7 +266,7 @@ describe('pico-accountancy', function () {
 
   it('should convert QIF content to expense group!', function () {
     const actual = accountancy.qifToExpenseGroupCsv(sampleQif);
-    const filename = 'test/expected/sample.rows.group.csv';
+    const filename = 'data/expected/sample.rows.group.csv';
     //fs.writeFileSync(filename, actual);
     const expected = fs.readFileSync(filename, {encoding: 'utf8'});
     assert.deepEqual(actual, expected);
@@ -274,7 +274,7 @@ describe('pico-accountancy', function () {
 
   it('should convert QIF content to expense summary!', function () {
     const actual = accountancy.qifToExpenseSummaryCsv(sampleQif);
-    const filename = 'test/expected/sample.rows.expense.summary.csv';
+    const filename = 'data/expected/sample.rows.expense.summary.csv';
     //fs.writeFileSync(filename, actual);
     const expected = fs.readFileSync(filename, {encoding: 'utf8'});
     assert.deepEqual(actual, expected);
@@ -282,7 +282,7 @@ describe('pico-accountancy', function () {
 
   it('should convert QIF content to expense summary!', function () {
     const actual = accountancy.qifToCreditSummaryCsv(sampleQif);
-    const filename = 'test/expected/sample.rows.credit.summary.csv';
+    const filename = 'data/expected/sample.rows.credit.summary.csv';
     fs.writeFileSync(filename, actual);
     const expected = fs.readFileSync(filename, {encoding: 'utf8'});
     assert.deepEqual(actual, expected);

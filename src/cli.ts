@@ -4,7 +4,7 @@ import program from 'commander';
 import path from 'path';
 import _ from 'lodash';
 import _S from 'string';
-import picoAccountancy from './index.js';
+import picoAccountancy from './index.js.js';
 const stdin = process.stdin;
 
 const userHome = process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'];
