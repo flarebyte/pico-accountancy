@@ -1,15 +1,13 @@
-import chai from 'chai';
-const assert = chai.assert;
 import fs from 'fs-extra';
 import moment from 'moment';
-import picoAccountancy from '../lib';
+import picoAccountancy from './accountancy';
 
 const sampleQif = fs.readFileSync('data/fixtures/sample.qif').toString();
 const DEBIT = 'DEBIT';
 
 const CREDIT = 'CREDIT';
 
-const normalise = (data) => {
+const normalise = (data: object) => {
   const a = JSON.stringify(data);
   return JSON.parse(a);
 };
@@ -24,49 +22,42 @@ const RENT = {
   name: 'Rent',
   title: 'Office rent',
   category: DEBIT
-
 };
 
 const INSURANCE = {
   name: 'Insurance',
   title: 'Insurance',
   category: DEBIT
-
 };
 
 const CASH = {
   name: 'Cash',
   title: 'Petty Cash',
   category: DEBIT
-
 };
 
 const ADMIN = {
   name: 'Administration',
   title: 'General Administration',
   category: DEBIT
-
 };
 
 const UTILS = {
   name: 'Utilities',
   title: 'Utilities',
   category: DEBIT
-
 };
 
 const LEGAL = {
   name: 'Legal',
   title: 'Legal/professional fees',
   category: DEBIT
-
 };
 
 const INTEREST = {
   name: 'Interest',
   title: 'Interest',
   category: CREDIT
-
 };
 
 const INVOICE = {
@@ -75,9 +66,19 @@ const INVOICE = {
   category: CREDIT
 };
 
-const allCategories = [SHARES, RENT, INSURANCE, CASH, ADMIN, UTILS, LEGAL, INTEREST, INVOICE];
+const allCategories: ReadonlyArray<any> = [
+  SHARES,
+  RENT,
+  INSURANCE,
+  CASH,
+  ADMIN,
+  UTILS,
+  LEGAL,
+  INTEREST,
+  INVOICE
+];
 
-const rules = [
+const rules: ReadonlyArray<any> = [
   {
     ifContains: 'LTD-MANAGEMENT',
     about: 'space 1',
@@ -132,45 +133,51 @@ const rules = [
 
 const conf = {
   categories: allCategories,
-  rules: rules
+  rules
 };
 const accountancy = picoAccountancy(conf);
 
-describe('pico-accountancy', function () {
-  it('should normalize date!', function () {
+  test('should normalize date!', t =>  {
     const actual = accountancy.normalizeDate('D07/04/2015');
     const expected = '2015-04-07';
     assert.equal(actual.format('YYYY-MM-DD'), expected);
   });
-  it('should detect if credit!', function () {
+  test('should detect if credit!', t =>  {
     const actual = accountancy.isDebitOrCredit('T0.02');
     assert.equal(actual, CREDIT);
   });
-  it('should detect if debit!', function () {
+  test('should detect if debit!', t =>  {
     const actual = accountancy.isDebitOrCredit('T-2.75');
     assert.equal(actual, DEBIT);
   });
-  it('should normalize a transfer!', function () {
+  test('should normalize a transfer!', t => {
     assert.equal(accountancy.normalizeTransfer('T-2.75'), 2.75, DEBIT);
     assert.equal(accountancy.normalizeTransfer('T2.75'), 2.75, CREDIT);
   });
-  it('should normalize the description!', function () {
-    const actual = accountancy.normalizeDescription('PCARD PAYMENT TO LTD R/T,28.78 GBP ON 16-03-2015                                           , 28.78');
-    assert.equal(actual, 'Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78');
+  test('should normalize the description!', t =>  {
+    const actual = accountancy.normalizeDescription(
+      'PCARD PAYMENT TO LTD R/T,28.78 GBP ON 16-03-2015                                           , 28.78'
+    );
+    assert.equal(
+      actual,
+      'Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78'
+    );
   });
-  it('should apply rules to description!', function () {
-    const actual = accountancy.applyRulesToDescription('PCARD PAYMENT TO LTD Contract 789 R/T,28.78');
+  test('should apply rules to description!', t =>  {
+    const actual = accountancy.applyRulesToDescription(
+      'PCARD PAYMENT TO LTD Contract 789 R/T,28.78'
+    );
     const expected = {
       about: 'contract',
       category: LEGAL
     };
     assert.deepEqual(actual, expected);
   });
-  it('should enhance row for date!', function () {
+  test('should enhance row for date!', t =>  {
     const actual = accountancy.enhanceRow('D07/04/2015', {});
     assert.deepEqual(actual.date.format('YYYY-MM-DD'), '2015-04-07');
   });
-  it('should enhance row for debit transfer!', function () {
+  test('should enhance row for debit transfer!', t => {
     const actual = accountancy.enhanceRow('T-2.75', {});
     const expected = {
       status: DEBIT,
@@ -180,7 +187,7 @@ describe('pico-accountancy', function () {
     };
     assert.deepEqual(actual, expected);
   });
-  it('should enhance row for credit transfer!', function () {
+  test('should enhance row for credit transfer!', t => {
     const actual = accountancy.enhanceRow('T2.75', {});
     const expected = {
       status: CREDIT,
@@ -190,16 +197,20 @@ describe('pico-accountancy', function () {
     };
     assert.deepEqual(actual, expected);
   });
-  it('should enhance row for description!', function () {
-    const actual = accountancy.enhanceRow('PCARD PAYMENT TO LTD Contract 789 R/T,28.78 GBP ON 16-03-2015                                           , 28.78', {});
+  test('should enhance row for description!', t => {
+    const actual = accountancy.enhanceRow(
+      'PCARD PAYMENT TO LTD Contract 789 R/T,28.78 GBP ON 16-03-2015                                           , 28.78',
+      {}
+    );
     const expected = {
       about: 'contract',
       category: LEGAL,
-      description: 'Card payment to ltd contract 789 r/t 28.78 gbp on 16-03-2015 28.78'
+      description:
+        'Card payment to ltd contract 789 r/t 28.78 gbp on 16-03-2015 28.78'
     };
     assert.deepEqual(actual, expected);
   });
-  it('should make debit id!', function () {
+  test('should make debit id!', t => {
     const rowNoAbout = {
       date: moment('2014-02-27'),
       status: 'debit',
@@ -226,7 +237,7 @@ describe('pico-accountancy', function () {
     accountancy.resetCounters();
   });
 
-  it('should make credit id!', function () {
+  test('should make credit id!', t => {
     const rowAbout = {
       date: moment('2014-03-27'),
       status: 'debit',
@@ -238,70 +249,73 @@ describe('pico-accountancy', function () {
     assert.deepEqual(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0003');
     accountancy.resetCounters();
   });
-  it('should convert QIF content to rows!', function () {
+  test('should convert QIF content to rows!', t => {
     const actual = accountancy.qifToRows(sampleQif);
     const filename = 'data/expected/sample.rows.json';
-    //fs.writeJsonSync(filename, actual);
+    // fs.writeJsonSync(filename, actual);
     const expected = fs.readJsonSync(filename);
     assert.lengthOf(actual, 7);
     assert.deepEqual(normalise(actual), expected, JSON.stringify(actual));
   });
 
-  it('should convert QIF content to rows with ids!', function () {
+  test('should convert QIF content to rows with ids!',t =>  {
     const actual = accountancy.qifToRowsWithIds(sampleQif);
     const filename = 'data/expected/sample.rows-with-ids.json';
-    //fs.writeJsonSync(filename, actual);
+    // fs.writeJsonSync(filename, actual);
     const expected = fs.readJsonSync(filename);
     assert.lengthOf(actual, 7);
     assert.deepEqual(normalise(actual), expected, JSON.stringify(actual));
   });
 
-  it('should convert QIF content to bank format!', function () {
-    const actual = accountancy.qifToBankCsv(sampleQif, [RENT.name, LEGAL.name, SHARES.name, INTEREST.name, INVOICE.name]);
+  test('should convert QIF content to bank format!', t =>  {
+    const actual = accountancy.qifToBankCsv(sampleQif, [
+      RENT.name,
+      LEGAL.name,
+      SHARES.name,
+      INTEREST.name,
+      INVOICE.name
+    ]);
     const filename = 'data/expected/sample.rows.bank.csv';
-    //fs.writeFileSync(filename, actual);
-    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    // fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, { encoding: 'utf8' });
     assert.deepEqual(actual, expected);
   });
 
-  it('should convert QIF content to expense group!', function () {
+  test('should convert QIF content to expense group!', t =>  {
     const actual = accountancy.qifToExpenseGroupCsv(sampleQif);
     const filename = 'data/expected/sample.rows.group.csv';
-    //fs.writeFileSync(filename, actual);
-    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    // fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, { encoding: 'utf8' });
     assert.deepEqual(actual, expected);
   });
 
-  it('should convert QIF content to expense summary!', function () {
+  test('should convert QIF content to expense summary!', t =>  {
     const actual = accountancy.qifToExpenseSummaryCsv(sampleQif);
     const filename = 'data/expected/sample.rows.expense.summary.csv';
-    //fs.writeFileSync(filename, actual);
-    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    // fs.writeFileSync(filename, actual);
+    const expected = fs.readFileSync(filename, { encoding: 'utf8' });
     assert.deepEqual(actual, expected);
   });
 
-  it('should convert QIF content to expense summary!', function () {
+  test('should convert QIF content to expense summary!', t =>  {
     const actual = accountancy.qifToCreditSummaryCsv(sampleQif);
     const filename = 'data/expected/sample.rows.credit.summary.csv';
     fs.writeFileSync(filename, actual);
-    const expected = fs.readFileSync(filename, {encoding: 'utf8'});
+    const expected = fs.readFileSync(filename, { encoding: 'utf8' });
     assert.deepEqual(actual, expected);
   });
 
-  it('should convert QIF content to expense total!', function () {
+  test('should convert QIF content to expense total!', t =>  {
     const actual = accountancy.qifToExpenseTotal(sampleQif);
     assert.deepEqual(actual, 407.56);
   });
 
-  it('should convert QIF content to credit total!', function () {
+  test('should convert QIF content to credit total!', t =>  {
     const actual = accountancy.qifToCreditTotal(sampleQif);
     assert.deepEqual(actual, 250.02);
   });
 
-  it('should convert QIF content to total by category!', function () {
+  test('should convert QIF content to total by category!', t =>  {
     const actual = accountancy.qifToTotalByCategory(sampleQif, INTEREST);
     assert.deepEqual(actual, 0.02);
   });
-
-
-});
