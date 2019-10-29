@@ -34,17 +34,51 @@ const normalizeDescription = (line: string) => {
     .capitalize().s;
 };
 
-export default conf => {
+interface Rule {
+  readonly ifContains: string,
+  readonly about: string,
+  readonly category: string
+}
+
+interface Configuration { 
+  readonly rules: ReadonlyArray<Rule>
+}
+
+interface Row { 
+  date: moment.Moment,
+  status: string,
+  debit: string,
+  credit: string,
+  amount: string,
+  description: string,
+  yyyymmdd: string,
+  category: string | null,
+  about: string | null
+}
+
+interface EnrichedRow { 
+  date: moment.Moment,
+  status: string,
+  debit: string,
+  credit: string,
+  amount: string,
+  description: string,
+  yyyymmdd: string,
+  category: string | null,
+  about: string | null
+}
+
+export default (conf: Configuration) => {
   const rules = conf.rules;
 
-  const applyRulesToDescription = desc => {
-    const search = _S(desc);
-    const found = {
+  const applyRulesToDescription = (desc: string) => {
+    const search = _S(desc.toLowerCase());
+    let found: {readonly about: string | null, readonly category: string | null} = {
       about: null,
       category: null
     };
     _.forEach(rules, rule => {
-      if (search.toLowerCase().contains(rule.ifContains.toLowerCase())) {
+      if (search.contains(rule.ifContains.toLowerCase())) {
         found = {
           about: rule.about,
           category: rule.category
@@ -54,7 +88,7 @@ export default conf => {
     return found;
   };
 
-  const enhanceRow = (line: string, row) => {
+  const enhanceRow = (line: string, row: Row) => {
     if (_S(line).startsWith('D')) {
       row.date = normalizeDate(line);
       row.yyyymmdd = row.date.format('YYYY-MM-DD');
@@ -81,10 +115,10 @@ export default conf => {
     return row;
   };
 
-  const qifToRows = qif => {
+  const qifToRows = (qif: string) => {
     const lines = qif.split('\n');
-    const results: ReadonlyArray<any> = [];
-    const row = {};
+    const results: Row[] = [];
+    let row: Row = {};
     _.forEach(lines, line => {
       if (_S(line).startsWith('^')) {
         results.push(row);

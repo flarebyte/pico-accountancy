@@ -18,6 +18,7 @@
   "repository": "flarebyte/pico-accountancy",
   "license": "MIT",
   "dependencies": {
+    "@types/string": "^0.0.29",
     "bluebird": "^3.7.1",
     "commander": "^3.0.2",
     "confiture": "^2.0.1",
