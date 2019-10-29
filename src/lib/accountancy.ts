@@ -47,25 +47,27 @@ interface Configuration {
 interface Row { 
   date: moment.Moment,
   status: string,
-  debit: string,
-  credit: string,
   amount: string,
   description: string,
-  yyyymmdd: string,
-  category: string | null,
-  about: string | null
+
 }
 
-interface EnrichedRow { 
+interface DateRow { 
   date: moment.Moment,
+  yyyymmdd: string,
+}
+
+interface AmountRow { 
   status: string,
   debit: string,
   credit: string,
   amount: string,
+}
+
+interface DescriptionRow { 
   description: string,
-  yyyymmdd: string,
-  category: string | null,
-  about: string | null
+  about: string | null,
+  category: string  | null
 }
 
 export default (conf: Configuration) => {
@@ -88,31 +90,27 @@ export default (conf: Configuration) => {
     return found;
   };
 
-  const enhanceRow = (line: string, row: Row) => {
+  const enhanceRow = (line: string, row: Row) : (DateRow | AmountRow | DescriptionRow | Error) => {
     if (_S(line).startsWith('D')) {
-      row.date = normalizeDate(line);
-      row.yyyymmdd = row.date.format('YYYY-MM-DD');
+      return { date: normalizeDate(line), 
+      yyyymmdd : row.date.format('YYYY-MM-DD')
+      }
     }
     if (_S(line).startsWith('T')) {
-      row.status = isDebitOrCredit(line);
+      const creditStatus = isDebitOrCredit(line);
       const amount = normalizeTransfer(line);
-      row.amount = amount;
       if (row.status === DEBIT) {
-        row.debit = amount;
-        row.credit = '';
-      } else {
-        row.debit = '';
-        row.credit = amount;
+        return (row.status === DEBIT) ?
+         { status: creditStatus, amount, debit: amount, credit: ''}:
+         { status: creditStatus, amount, debit: '', credit: amount};
       }
     }
     if (_S(line).startsWith('P')) {
-      row.description = normalizeDescription(line);
+      const description = normalizeDescription(line);
       const more = applyRulesToDescription(row.description);
-      row.category = more.category;
-      row.about = more.about;
+      return {description, category: more.category, about: more.about }
     }
-
-    return row;
+    return Error('Unknown line');
   };
 
   const qifToRows = (qif: string) => {
