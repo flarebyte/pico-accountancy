@@ -1,5 +1,5 @@
 import program from 'commander';
-import confiture, {} from 'confiture';
+import confiture from 'confiture';
 import _ from 'lodash';
 import path from 'path';
 import _S from 'string';
@@ -10,7 +10,7 @@ const stdin = process.stdin;
 const userHome =
   process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'];
 
-const display = (msg:any) => {
+const display = (msg: any) => {
   if (_.isString(msg)) {
     process.stdout.write(msg + '\n');
   } else {
@@ -36,7 +36,7 @@ if (_.isError(conf)) {
 
 const targetRegex = /^(bank|debit|credit|expenses|total)$/i;
 
-const asList = (value:string) => {
+const asList = (value: string) => {
   return _S(value).parseCSV();
 };
 
@@ -55,7 +55,7 @@ const accountancy = picoAccountancy(conf);
 const chunks: any[] = [];
 stdin.resume();
 stdin.setEncoding('utf8');
-stdin.on('data', (data) => {
+stdin.on('data', data => {
   chunks.push(data);
 });
 
