@@ -6,11 +6,11 @@ const idprefs: ReadonlyArray<any> = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'
 const DEBIT = 'DEBIT';
 const CREDIT = 'CREDIT';
 
-const normalizeDate = (line: string) => {
+const normalizeDate = (line: string): moment.Moment => {
   return moment(_S(line).chompLeft('D').s, 'DD/MM/YYYY');
 };
 
-const isDebitOrCredit = (line: string) => {
+const isDebitOrCredit = (line: string): "DEBIT"| "CREDIT" => {
   return _S(line)
     .chompLeft('T')
     .collapseWhitespace()
@@ -44,13 +44,13 @@ interface Configuration {
   readonly rules: ReadonlyArray<Rule>
 }
 
-interface Row { 
-  date: moment.Moment,
-  status: string,
-  amount: string,
-  description: string,
+// interface Row { 
+//   date: moment.Moment,
+//   status: string,
+//   amount: string,
+//   description: string,
 
-}
+// }
 
 interface DateRow { 
   date: moment.Moment,
@@ -58,7 +58,7 @@ interface DateRow {
 }
 
 interface AmountRow { 
-  status: string,
+  status:  'DEBIT'| 'CREDIT',
   debit: string,
   credit: string,
   amount: string,
@@ -68,6 +68,42 @@ interface DescriptionRow {
   description: string,
   about: string | null,
   category: string  | null
+}
+
+interface CombinedRow { 
+  date: moment.Moment,
+  yyyymmdd: string,
+  status: 'DEBIT'| 'CREDIT',
+  amount: string,
+  debit: string,
+  credit: string,
+  description: string,
+  about: string | null,
+  category: string | null
+}
+
+interface TempCompositeRow { 
+  dateRow: DateRow | null
+  amountRow: AmountRow | null
+  descriptionRow: DescriptionRow | null
+}
+
+const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
+  if (value.amountRow === null || value.dateRow === null || value.descriptionRow === null) {
+    throw Error("Corrupted data");
+  }
+  return {
+    date: value.dateRow.date,
+    yyyymmdd: value.dateRow.yyyymmdd,
+    status: value.amountRow.status,
+    amount: value.amountRow.amount,
+    debit: value.amountRow.debit,
+    credit: value.amountRow.credit,
+    description: value.descriptionRow.description,
+    about: value.descriptionRow.about,
+    category: value.descriptionRow.category
+  }
+  
 }
 
 export default (conf: Configuration) => {
@@ -90,39 +126,49 @@ export default (conf: Configuration) => {
     return found;
   };
 
-  const enhanceRow = (line: string, row: Row) : (DateRow | AmountRow | DescriptionRow | Error) => {
-    if (_S(line).startsWith('D')) {
-      return { date: normalizeDate(line), 
-      yyyymmdd : row.date.format('YYYY-MM-DD')
-      }
-    }
-    if (_S(line).startsWith('T')) {
-      const creditStatus = isDebitOrCredit(line);
-      const amount = normalizeTransfer(line);
-      if (row.status === DEBIT) {
-        return (row.status === DEBIT) ?
-         { status: creditStatus, amount, debit: amount, credit: ''}:
-         { status: creditStatus, amount, debit: '', credit: amount};
-      }
-    }
-    if (_S(line).startsWith('P')) {
-      const description = normalizeDescription(line);
-      const more = applyRulesToDescription(row.description);
-      return {description, category: more.category, about: more.about }
-    }
-    return Error('Unknown line');
-  };
+  const parseDateRow = (line: string): DateRow => {
+    const rowDate = normalizeDate(line)
+    const yyyymmdd = rowDate.format('YYYY-MM-DD')
+    return { date: rowDate, yyyymmdd };
+  }
+
+  const parseAmountRow = (line: string): AmountRow => {
+    const creditStatus = isDebitOrCredit(line);
+    const amount = normalizeTransfer(line);
+      return (creditStatus === DEBIT) ?
+       { status: creditStatus, amount, debit: amount, credit: ''}:
+       { status: creditStatus, amount, debit: '', credit: amount};
+  }
+
+  const parseRowDescription = (line: string): DescriptionRow => {
+    const description = normalizeDescription(line);
+    const more = applyRulesToDescription(description);
+    return {description, category: more.category, about: more.about }
+  }
 
   const qifToRows = (qif: string) => {
     const lines = qif.split('\n');
-    const results: Row[] = [];
-    let row: Row = {};
+    const results: CombinedRow[] = [];
+    let row: TempCompositeRow = {dateRow: null, amountRow: null, descriptionRow : null};
     _.forEach(lines, line => {
-      if (_S(line).startsWith('^')) {
-        results.push(row);
-        row = {};
-      } else {
-        enhanceRow(line, row);
+      const firstChar = line.charAt(0)
+      switch (firstChar) {
+        case '^':
+          results.push(joinTempCompositeRow(row))
+          row = {dateRow: null, amountRow: null, descriptionRow : null};
+          break;
+        case 'D':
+          parseDateRow(line)
+          break;
+        case 'T':
+            parseAmountRow(line)
+          break;
+        case 'P':
+            parseRowDescription(line)
+            break;
+                  
+        default:
+          break;
       }
     });
     return results;
