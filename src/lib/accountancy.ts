@@ -34,52 +34,64 @@ const normalizeDescription = (line: string) => {
     .capitalize().s;
 };
 
-interface Rule {
+export interface Category {
+  readonly name: string,
+  readonly title: string,
+  readonly category: 'DEBIT'| 'CREDIT',
+}
+
+export interface Rule {
   readonly ifContains: string,
   readonly about: string,
-  readonly category: string
+  readonly category: Category
 }
 
-interface Configuration { 
+export interface Configuration { 
   readonly rules: ReadonlyArray<Rule>
+  readonly categories: ReadonlyArray<Category>
 }
-
-// interface Row { 
-//   date: moment.Moment,
-//   status: string,
-//   amount: string,
-//   description: string,
-
-// }
 
 interface DateRow { 
-  date: moment.Moment,
-  yyyymmdd: string,
+  readonly date: moment.Moment,
+  readonly yyyymmdd: string,
 }
 
 interface AmountRow { 
-  status:  'DEBIT'| 'CREDIT',
-  debit: string,
-  credit: string,
-  amount: string,
+  readonly status:  'DEBIT'| 'CREDIT',
+  readonly debit: string,
+  readonly credit: string,
+  readonly amount: string,
 }
 
 interface DescriptionRow { 
-  description: string,
-  about: string | null,
-  category: string  | null
+  readonly description: string,
+  readonly about: string | null,
+  readonly category: Category | null
 }
 
-interface CombinedRow { 
-  date: moment.Moment,
-  yyyymmdd: string,
-  status: 'DEBIT'| 'CREDIT',
-  amount: string,
-  debit: string,
-  credit: string,
-  description: string,
-  about: string | null,
-  category: string | null
+export interface CombinedRow { 
+  readonly date: moment.Moment,
+  readonly yyyymmdd: string,
+  readonly status: 'DEBIT'| 'CREDIT',
+  readonly amount: string,
+  readonly debit: string,
+  readonly credit: string,
+  readonly description: string,
+  readonly about: string | null,
+  readonly category: Category | null
+}
+
+export interface Row { 
+  readonly id: string,
+  readonly date: moment.Moment,
+  readonly yyyymmdd: string,
+  readonly status: 'DEBIT'| 'CREDIT',
+  readonly amount: string,
+  readonly debit: string,
+  readonly credit: string,
+  readonly description: string,
+  readonly about: string | null,
+  readonly category: Category | null
 }
 
 interface TempCompositeRow { 
@@ -88,6 +100,12 @@ interface TempCompositeRow {
   descriptionRow: DescriptionRow | null
 }
 
+interface Counters {
+    commons: number[],
+    Shares:  number[],
+    Interest: number[],
+    Invoices:  number[]
+}
 const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   if (value.amountRow === null || value.dateRow === null || value.descriptionRow === null) {
     throw Error("Corrupted data");
@@ -106,47 +124,35 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   
 }
 
-export default (conf: Configuration) => {
-  const rules = conf.rules;
+const parseDateRow = (line: string): DateRow => {
+  const rowDate = normalizeDate(line)
+  const yyyymmdd = rowDate.format('YYYY-MM-DD')
+  return { date: rowDate, yyyymmdd };
+}
 
-  const applyRulesToDescription = (desc: string) => {
+const parseAmountRow = (line: string): AmountRow => {
+  const creditStatus = isDebitOrCredit(line);
+  const amount = normalizeTransfer(line);
+    return (creditStatus === DEBIT) ?
+     { status: creditStatus, amount, debit: amount, credit: ''}:
+     { status: creditStatus, amount, debit: '', credit: amount};
+}
+
+const accountancy = (conf: Configuration) => {
+  const rules = conf.rules;
+  
+  function applyRulesToDescription (desc: string): Rule | undefined {
     const search = _S(desc.toLowerCase());
-    let found: {readonly about: string | null, readonly category: string | null} = {
-      about: null,
-      category: null
-    };
-    _.forEach(rules, rule => {
-      if (search.contains(rule.ifContains.toLowerCase())) {
-        found = {
-          about: rule.about,
-          category: rule.category
-        };
-      }
-    });
-    return found;
+    return rules.find(rule => search.contains(rule.ifContains.toLowerCase()))
   };
 
-  const parseDateRow = (line: string): DateRow => {
-    const rowDate = normalizeDate(line)
-    const yyyymmdd = rowDate.format('YYYY-MM-DD')
-    return { date: rowDate, yyyymmdd };
-  }
-
-  const parseAmountRow = (line: string): AmountRow => {
-    const creditStatus = isDebitOrCredit(line);
-    const amount = normalizeTransfer(line);
-      return (creditStatus === DEBIT) ?
-       { status: creditStatus, amount, debit: amount, credit: ''}:
-       { status: creditStatus, amount, debit: '', credit: amount};
-  }
-
-  const parseRowDescription = (line: string): DescriptionRow => {
+  function parseRowDescription(line: string): DescriptionRow {
     const description = normalizeDescription(line);
     const more = applyRulesToDescription(description);
-    return {description, category: more.category, about: more.about }
+    return {description, category: more ? more.category: null, about: more ? more.about : null }
   }
 
-  const qifToRows = (qif: string) => {
+  function qifToRows(qif: string): CombinedRow[] {
     const lines = qif.split('\n');
     const results: CombinedRow[] = [];
     let row: TempCompositeRow = {dateRow: null, amountRow: null, descriptionRow : null};
@@ -173,74 +179,80 @@ export default (conf: Configuration) => {
     });
     return results;
   };
-
-  const counters = _.fill(Array(12), 0);
-  const countersCredit = {
-    Shares: _.fill(Array(12), 0),
-    Interest: _.fill(Array(12), 0),
-    Invoices: _.fill(Array(12), 0)
-  };
-
-  const resetCounters = () => {
-    counters = _.fill(Array(12), 0);
-    countersCredit = {
+ 
+  function resetCounters() : Counters {
+    return {
+      commons: _.fill(Array(12), 0),
       Shares: _.fill(Array(12), 0),
       Interest: _.fill(Array(12), 0),
       Invoices: _.fill(Array(12), 0)
     };
-  };
+ }
+  const counters = resetCounters();
 
-  const makeDebitId = row => {
+  function incrementCounterByCategory(category: string, month: number): number {
+    switch (category) {
+      case "Shares":
+        const countShares = counters.Shares[month] + 1 
+        counters.Shares[month] = countShares
+        return countShares
+      case "Interest":
+        const countInterest = counters.Interest[month] + 1 
+        counters.Interest[month] = countInterest
+        return countInterest
+      case "Invoices":
+        const countInvoices = counters.Invoices[month] + 1 
+        counters.Invoices[month] = countInvoices
+        return countInvoices         
+      default:
+        return 0
+    }
+  }
+
+  function makeDebitId(row: CombinedRow): string {
     const year = row.date.format('YY');
     const month = row.date.month();
     const code = idprefs[month];
-    counters[month] = counters[month] + 1;
-    const num = _S(counters[month]).padLeft(4, '0').s;
+    const newid = counters.commons[month] + 1;
+    counters.commons[month] = newid; 
+    const num = _S(newid).padLeft(4, '0').s;
     const about = row.about
       ? `-${_S(row.about)
           .dasherize()
           .s.toUpperCase()}`
       : '';
     const id = `${year}${code}-${num}${about}`;
-    row.id = id;
     return id;
   };
 
-  const makeCreditId = row => {
+  function makeCreditId(row: CombinedRow): string {
     const YY = row.date.format('YY');
     const MM = row.date.format('MM');
     const month = row.date.month();
     const categoryName = _.get(row, 'category.name');
-    countersCredit[categoryName][month] =
-      countersCredit[categoryName][month] + 1;
-    const num = _S(countersCredit[categoryName][month]).padLeft(4, '0').s;
-    const isFirst = countersCredit[categoryName][month] === 1;
+    const newid = incrementCounterByCategory(categoryName, month)
+    const num = _S(newid).padLeft(4, '0').s;
+    const isFirst = newid === 1;
     const about = _S(row.about)
       .dasherize()
       .s.toUpperCase();
-    const id = isFirst ? `${YY}-${about}-${MM}` : `${YY}-${about}-${MM}-${num}`;
-    row.id = id.replace(/[-]+/g, '-');
-    return row.id;
+    const almostId = isFirst ? `${YY}-${about}-${MM}` : `${YY}-${about}-${MM}-${num}`;
+    const id = almostId.replace(/[-]+/g, '-');
+    return id;
   };
 
-  const addId = row => {
-    if (row.status === DEBIT) {
-      makeDebitId(row);
-    }
-    if (row.status === CREDIT) {
-      makeCreditId(row);
-    }
+  function addId(row: CombinedRow): Row {
+    return {...row, id: row.status === DEBIT ? makeDebitId(row): makeCreditId(row)}
   };
 
-  const qifToRowsWithIds = qif => {
+  function qifToRowsWithIds(qif: string): Row[] {
     const rows = qifToRows(qif).reverse();
-    _.forEach(rows, addId);
-    return rows;
+    return rows.map(addId);
   };
 
-  const asBankRowCsv = (row, extraColumns) => {
+  function asBankRowCsv(row: Row, extraColumns: string[]): string {
     const categoryName = row.category ? row.category.name : 'TODO';
-    const csvDefaultRow: ReadonlyArray<any> = [
+    const csvDefaultRow: ReadonlyArray<string> = [
       row.yyyymmdd,
       row.description,
       row.credit,
@@ -253,11 +265,11 @@ export default (conf: Configuration) => {
       categoryName === i ? row.amount : ''
     );
     const csvRow = csvDefaultRow.concat(csvExtraRow);
-    return _S(csvRow).toCSV();
+    return _S(csvRow).toCSV().s;
   };
 
-  const qifToBankCsv = (qif, extraColumns) => {
-    const defaultHeaders: ReadonlyArray<any> = [
+  function qifToBankCsv(qif: string, extraColumns: string[]): string {
+    const defaultHeaders: ReadonlyArray<string> = [
       'Date',
       'Description',
       'Credit',
@@ -268,24 +280,24 @@ export default (conf: Configuration) => {
     ];
     const headers = defaultHeaders.concat(extraColumns);
     const header: ReadonlyArray<any> = [_S(headers).toCSV()];
-    const rows = _.map(qifToRowsWithIds(qif), i =>
-      asBankRowCsv(i, extraColumns)
+    const rows = _.map(qifToRowsWithIds(qif), row =>
+      asBankRowCsv(row, extraColumns)
     );
     const headerAndRows = header.concat(rows);
     const csv = headerAndRows.join('\n');
     return csv;
   };
 
-  const qifToExpenseGroupCsv = qif => {
+  const qifToExpenseGroupCsv = (qif: string) : string => {
     const expenseCategories = _.filter(conf.categories, { category: DEBIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = cat => {
+    const filterByCategory = (cat: Category) => {
       const filtered = _.filter(rows, { status: DEBIT, category: cat });
       if (_.isEmpty(filtered)) {
         return cat.name;
       }
       const simplifiedRows = _.map(filtered, row =>
-        _S(['', "'" + row.id, row.debit]).toCSV()
+        _S(['', "'" + row.id, row.debit]).toCSV().s
       );
       const simplifiedRowsWithHeader = [cat.name].concat(simplifiedRows);
       return simplifiedRowsWithHeader.join('\n');
@@ -295,15 +307,15 @@ export default (conf: Configuration) => {
     return csv;
   };
 
-  const qifToExpenseSummaryCsv = qif => {
+  const qifToExpenseSummaryCsv = (qif: string) : string => {
     const expenseCategories = _.filter(conf.categories, { category: DEBIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = cat => {
+    const filterByCategory = (cat: Category) => {
       const filtered = _.filter(rows, { status: DEBIT, category: cat });
       if (_.isEmpty(filtered)) {
         return cat.name;
       }
-      const sumOfCategory = _.sum(filtered, 'debit');
+      const sumOfCategory = _.sumBy(filtered, 'debit');
       const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
       return _S(summaryForCategory).toCSV();
     };
@@ -312,36 +324,36 @@ export default (conf: Configuration) => {
     return csv;
   };
 
-  const qifToExpenseTotal = qif => {
+  const qifToExpenseTotal = (qif: string): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: DEBIT });
-    const total = _.sum(filtered, 'debit');
+    const total = _.sumBy(filtered, 'debit');
     return _S(total).toFloat(2);
   };
 
-  const qifToCreditTotal = qif => {
+  const qifToCreditTotal = (qif: string):number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: CREDIT });
-    const total = _.sum(filtered, 'credit');
+    const total = _.sumBy(filtered, 'credit');
     return _S(total).toFloat(2);
   };
 
-  const qifToTotalByCategory = (qif, category) => {
+  const qifToTotalByCategory = (qif: string, category: Category): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { category });
-    const total = _.sum(filtered, 'amount');
+    const total = _.sumBy(filtered, 'amount');
     return _S(total).toFloat(2);
   };
 
-  const qifToCreditSummaryCsv = qif => {
+  const qifToCreditSummaryCsv = (qif: string): string => {
     const creditCategories = _.filter(conf.categories, { category: CREDIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = cat => {
+    const filterByCategory = (cat: Category) => {
       const filtered = _.filter(rows, { status: CREDIT, category: cat });
       if (_.isEmpty(filtered)) {
         return cat.name;
       }
-      const sumOfCategory = _.sum(filtered, 'credit');
+      const sumOfCategory = _.sumBy(filtered, 'credit');
       const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
       return _S(summaryForCategory).toCSV();
     };
@@ -356,7 +368,6 @@ export default (conf: Configuration) => {
     normalizeTransfer,
     normalizeDescription,
     applyRulesToDescription,
-    enhanceRow,
     qifToRows,
     resetCounters,
     makeDebitId,
@@ -372,3 +383,5 @@ export default (conf: Configuration) => {
     qifToTotalByCategory
   };
 };
+
+export default accountancy;

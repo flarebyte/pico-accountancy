@@ -1,16 +1,16 @@
-// import picoAccountancy from './index.js';
 import program from 'commander';
-import confiture from 'confiture';
+import confiture, {} from 'confiture';
 import _ from 'lodash';
 import path from 'path';
 import _S from 'string';
-import picoAccountancy from './index.js.js';
+import picoAccountancy from './lib/accountancy';
+
 const stdin = process.stdin;
 
 const userHome =
   process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'];
 
-const display = msg => {
+const display = (msg:any) => {
   if (_.isString(msg)) {
     process.stdout.write(msg + '\n');
   } else {
@@ -36,12 +36,12 @@ if (_.isError(conf)) {
 
 const targetRegex = /^(bank|debit|credit|expenses|total)$/i;
 
-const asList = value => {
+const asList = (value:string) => {
   return _S(value).parseCSV();
 };
 
 program
-  .version('0.0.1')
+  .version('0.1.0')
   .option('-t, --target <target>', 'Convert to target', targetRegex)
   .option(
     '-c, --columns <target>',
@@ -52,10 +52,10 @@ program
 
 const accountancy = picoAccountancy(conf);
 
-let chunks: ReadonlyArray<any> = [];
+const chunks: any[] = [];
 stdin.resume();
 stdin.setEncoding('utf8');
-stdin.on('data', data => {
+stdin.on('data', (data) => {
   chunks.push(data);
 });
 
