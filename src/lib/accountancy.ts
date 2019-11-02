@@ -154,6 +154,24 @@ const parseAmountRow = (line: string): AmountRow => {
     : { status: creditStatus, amount, debit: '', credit: amount };
 };
 
+const sumDebit = (rows: Row[]): number =>
+  _.sum(rows.map(row => parseFloat(row.debit)));
+const sumCredit = (rows: Row[]): number =>
+  _.sum(rows.map(row => parseFloat(row.credit)));
+const sumAmount = (rows: Row[]): number =>
+  _.sum(rows.map(row => parseFloat(row.amount)));
+
+const filterDebitByCategory = (rows: Row[]) => (cat: Category): string => {
+  const filtered = _.filter(rows, { status: DEBIT, category: cat });
+  if (_.isEmpty(filtered)) {
+    return cat.name;
+  }
+  const sumOfCategory = sumDebit(filtered);
+  const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
+  return _S(summaryForCategory).toCSV().s;
+};
+
+// Main ...
 const accountancy = (conf: Configuration) => {
   const rules = conf.rules;
 
@@ -342,16 +360,7 @@ const accountancy = (conf: Configuration) => {
   const qifToExpenseSummaryCsv = (qif: string): string => {
     const expenseCategories = _.filter(conf.categories, { category: DEBIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = (cat: Category) => {
-      const filtered = _.filter(rows, { status: DEBIT, category: cat });
-      if (_.isEmpty(filtered)) {
-        return cat.name;
-      }
-      const sumOfCategory = _.sumBy(filtered, 'debit');
-      const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
-      return _S(summaryForCategory).toCSV();
-    };
-    const results = _.map(expenseCategories, filterByCategory);
+    const results = _.map(expenseCategories, filterDebitByCategory(rows));
     const csv = results.join('\n');
     return csv;
   };
@@ -359,21 +368,21 @@ const accountancy = (conf: Configuration) => {
   const qifToExpenseTotal = (qif: string): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: DEBIT });
-    const total = _.sumBy(filtered, 'debit');
+    const total = sumDebit(filtered);
     return _S(total).toFloat(2);
   };
 
   const qifToCreditTotal = (qif: string): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: CREDIT });
-    const total = _.sumBy(filtered, 'credit');
+    const total = sumCredit(filtered);
     return _S(total).toFloat(2);
   };
 
   const qifToTotalByCategory = (qif: string, category: Category): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { category });
-    const total = _.sumBy(filtered, 'amount');
+    const total = sumAmount(filtered);
     return _S(total).toFloat(2);
   };
 
