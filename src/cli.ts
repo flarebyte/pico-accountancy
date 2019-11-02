@@ -1,7 +1,6 @@
 import program from 'commander';
 import { confiture } from 'confiture';
 import _ from 'lodash';
-import path from 'path';
 import _S from 'string';
 import picoAccountancy from './lib/accountancy';
 
@@ -20,7 +19,7 @@ const display = (msg: any) => {
 
 const confMng = confiture({
   name: 'conf',
-  schema: path.dirname(__dirname) + '/conf.schema.json',
+  schema: 'conf.schema.json',
   baseDirectory: '' + userHome,
   relativeDirectory: '.pico-accountancy'
 });

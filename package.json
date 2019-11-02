@@ -9,9 +9,14 @@
     "url": "https://github.com/flarebyte"
   },
   "files": [
-    "dist"
+    "build"
   ],
-  "main": "dist/index.js",
+  "main": "build/main/index.js",
+  "typings": "build/main/index.d.ts",
+  "module": "build/module/index.js",
+  "engines": {
+    "node": ">= 8.11.0"
+  },
   "keywords": [
     "accountancy"
   ],
