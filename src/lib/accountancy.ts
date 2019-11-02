@@ -155,11 +155,11 @@ const parseAmountRow = (line: string): AmountRow => {
 };
 
 const sumDebit = (rows: Row[]): number =>
-  _.sum(rows.map(row => parseFloat(row.debit)));
+  _S(_.sum(rows.map(row => parseFloat(row.debit)))).toFloat(2);
 const sumCredit = (rows: Row[]): number =>
-  _.sum(rows.map(row => parseFloat(row.credit)));
+  _S(_.sum(rows.map(row => parseFloat(row.credit)))).toFloat(2);
 const sumAmount = (rows: Row[]): number =>
-  _.sum(rows.map(row => parseFloat(row.amount)));
+  _S(_.sum(rows.map(row => parseFloat(row.amount)))).toFloat(2);
 
 const filterDebitByCategory = (rows: Row[]) => (cat: Category): string => {
   const filtered = _.filter(rows, { status: DEBIT, category: cat });
@@ -169,6 +169,29 @@ const filterDebitByCategory = (rows: Row[]) => (cat: Category): string => {
   const sumOfCategory = sumDebit(filtered);
   const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
   return _S(summaryForCategory).toCSV().s;
+};
+
+const filterCreditByCategory = (rows: Row[]) => (cat: Category): string => {
+  const filtered = _.filter(rows, { status: CREDIT, category: cat });
+  if (_.isEmpty(filtered)) {
+    return cat.name;
+  }
+  const sumOfCategory = sumCredit(filtered);
+  const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
+  return _S(summaryForCategory).toCSV().s;
+};
+
+const filterGroupByCategory = (rows: Row[]) => (cat: Category): string => {
+  const filtered = _.filter(rows, { status: DEBIT, category: cat });
+  if (_.isEmpty(filtered)) {
+    return cat.name;
+  }
+  const simplifiedRows = _.map(
+    filtered,
+    row => _S(['', "'" + row.id, row.debit]).toCSV().s
+  );
+  const simplifiedRowsWithHeader = [cat.name].concat(simplifiedRows);
+  return simplifiedRowsWithHeader.join('\n');
 };
 
 // Main ...
@@ -340,19 +363,7 @@ const accountancy = (conf: Configuration) => {
   const qifToExpenseGroupCsv = (qif: string): string => {
     const expenseCategories = _.filter(conf.categories, { category: DEBIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = (cat: Category) => {
-      const filtered = _.filter(rows, { status: DEBIT, category: cat });
-      if (_.isEmpty(filtered)) {
-        return cat.name;
-      }
-      const simplifiedRows = _.map(
-        filtered,
-        row => _S(['', "'" + row.id, row.debit]).toCSV().s
-      );
-      const simplifiedRowsWithHeader = [cat.name].concat(simplifiedRows);
-      return simplifiedRowsWithHeader.join('\n');
-    };
-    const results = _.map(expenseCategories, filterByCategory);
+    const results = _.map(expenseCategories, filterGroupByCategory(rows));
     const csv = results.join('\n');
     return csv;
   };
@@ -369,36 +380,27 @@ const accountancy = (conf: Configuration) => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: DEBIT });
     const total = sumDebit(filtered);
-    return _S(total).toFloat(2);
+    return total;
   };
 
   const qifToCreditTotal = (qif: string): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { status: CREDIT });
     const total = sumCredit(filtered);
-    return _S(total).toFloat(2);
+    return total;
   };
 
   const qifToTotalByCategory = (qif: string, category: Category): number => {
     const rows = qifToRowsWithIds(qif);
     const filtered = _.filter(rows, { category });
     const total = sumAmount(filtered);
-    return _S(total).toFloat(2);
+    return total;
   };
 
   const qifToCreditSummaryCsv = (qif: string): string => {
     const creditCategories = _.filter(conf.categories, { category: CREDIT });
     const rows = qifToRowsWithIds(qif);
-    const filterByCategory = (cat: Category) => {
-      const filtered = _.filter(rows, { status: CREDIT, category: cat });
-      if (_.isEmpty(filtered)) {
-        return cat.name;
-      }
-      const sumOfCategory = _.sumBy(filtered, 'credit');
-      const summaryForCategory: ReadonlyArray<any> = [cat.name, sumOfCategory];
-      return _S(summaryForCategory).toCSV();
-    };
-    const results = _.map(creditCategories, filterByCategory);
+    const results = _.map(creditCategories, filterCreditByCategory(rows));
     const csv = results.join('\n');
     return csv;
   };
