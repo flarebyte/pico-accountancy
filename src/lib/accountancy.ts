@@ -296,13 +296,15 @@ const accountancy = (conf: Configuration) => {
     const YY = row.date.format('YY');
     const MM = row.date.format('MM');
     const month = row.date.month();
-    const categoryName = row.category ? row.category.name : '';
+    const categoryName = row.category ? row.category.name : 'todo';
     const newid = incrementCounterByCategory(categoryName, month);
     const num = _S(newid).padLeft(4, '0').s;
     const isFirst = newid === 1;
-    const about = _S(row.about)
-      .dasherize()
-      .s.toUpperCase();
+    const about = row.about
+      ? _S(row.about)
+          .dasherize()
+          .s.toUpperCase()
+      : 'todo';
     const almostId = isFirst
       ? `${YY}-${about}-${MM}`
       : `${YY}-${about}-${MM}-${num}`;

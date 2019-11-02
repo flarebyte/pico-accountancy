@@ -230,6 +230,20 @@ test('should make credit id!', t => {
   t.is(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0002');
   t.is(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0003');
 });
+
+test('should mark invalid credit id!', t => {
+  const accountancy = picoAccountancy(conf);
+  const rowAbout: CombinedRow = {
+    ...defaultCombinedRow,
+    date: moment('2014-03-27'),
+    status: CREDIT,
+    category: null,
+    about: null
+  };
+  t.is(accountancy.makeCreditId(rowAbout), '14-todo-03-0000');
+  t.is(accountancy.makeCreditId(rowAbout), '14-todo-03-0000');
+});
+
 test('should convert QIF content to rows!', t => {
   const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToRows(sampleQif);
