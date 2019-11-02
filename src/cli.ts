@@ -40,7 +40,7 @@ const asList = (value: string) => {
 };
 
 program
-  .version('0.1.0')
+  .version('0.5.0')
   .option('-t, --target <target>', 'Convert to target', targetRegex)
   .option(
     '-c, --columns <target>',
