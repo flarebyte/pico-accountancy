@@ -19,12 +19,6 @@ const idprefs: ReadonlyArray<any> = [
 const DEBIT = 'DEBIT';
 const CREDIT = 'CREDIT';
 
-const logme = (value: any) => {
-  // tslint:disable-next-line:no-console
-  console.log('>>', value);
-  return value;
-};
-
 const normalizeDate = (line: string): moment.Moment => {
   return moment(_S(line).chompLeft('D').s, 'DD/MM/YYYY');
 };
@@ -225,7 +219,7 @@ const accountancy = (conf: Configuration) => {
   function incrementCounterByCategory(category: string, month: number): number {
     switch (category) {
       case 'Shares':
-        const countShares = logme(counters.Shares)[month] + 1;
+        const countShares = counters.Shares[month] + 1;
         counters.Shares[month] = countShares;
         return countShares;
       case 'Interest':

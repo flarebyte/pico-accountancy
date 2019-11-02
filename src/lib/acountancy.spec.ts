@@ -137,11 +137,6 @@ const conf = {
   rules
 };
 
-test.beforeEach(() => {
-  // tslint:disable-next-line:no-console
-  console.log('beforeEach');
-});
-
 test('should normalize date!', t => {
   const accountancy = picoAccountancy(conf);
   const actual = accountancy.normalizeDate('D07/04/2015');
@@ -255,7 +250,7 @@ test('should convert QIF content to rows with ids!', t => {
   t.deepEqual(normalise(actual), expected, JSON.stringify(actual));
 });
 
-test.only('should convert QIF content to bank format!', t => {
+test('should convert QIF content to bank format!', t => {
   const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToBankCsv(sampleQif, [
     RENT.name,
@@ -292,7 +287,7 @@ test('should convert QIF content to credit summary!', t => {
   const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToCreditSummaryCsv(sampleQif);
   const filename = 'data/expected/sample.rows.credit.summary.csv';
-  fs.writeFileSync(filename, actual);
+  // fs.writeFileSync(filename, actual);
   const expected = fs.readFileSync(filename, { encoding: 'utf8' });
   t.deepEqual(actual, expected);
 });
