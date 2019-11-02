@@ -136,32 +136,42 @@ const conf = {
   categories: allCategories,
   rules
 };
-const accountancy = picoAccountancy(conf);
+
+test.beforeEach(() => {
+  // tslint:disable-next-line:no-console
+  console.log('beforeEach');
+});
 
 test('should normalize date!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.normalizeDate('D07/04/2015');
   const expected = '2015-04-07';
   t.is(actual.format('YYYY-MM-DD'), expected);
 });
 test('should detect if credit!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.isDebitOrCredit('T0.02');
   t.is(actual, CREDIT);
 });
 test('should detect if debit!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.isDebitOrCredit('T-2.75');
   t.is(actual, DEBIT);
 });
 test('should normalize a transfer!', t => {
+  const accountancy = picoAccountancy(conf);
   t.is(accountancy.normalizeTransfer('T-2.75'), '2.75', DEBIT);
   t.is(accountancy.normalizeTransfer('T2.75'), '2.75', CREDIT);
 });
 test('should normalize the description!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.normalizeDescription(
     'PCARD PAYMENT TO LTD R/T,28.78 GBP ON 16-03-2015                                           , 28.78'
   );
   t.is(actual, 'Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78');
 });
 test('should apply rules to description!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.applyRulesToDescription(
     'PCARD PAYMENT TO LTD Contract 789 R/T,28.78'
   );
@@ -183,6 +193,7 @@ const defaultCombinedRow = {
 };
 
 test('should make debit id!', t => {
+  const accountancy = picoAccountancy(conf);
   const rowNoAbout: CombinedRow = {
     ...defaultCombinedRow,
     date: moment('2014-02-27'),
@@ -209,10 +220,10 @@ test('should make debit id!', t => {
   t.is(accountancy.makeDebitId(rowNoAbout2), '14L-0002');
   t.is(accountancy.makeDebitId(rowAbout), '14A-0001-ABOUT');
   t.is(accountancy.makeDebitId(rowAbout), '14A-0002-ABOUT');
-  accountancy.resetCounters();
 });
 
 test('should make credit id!', t => {
+  const accountancy = picoAccountancy(conf);
   const rowAbout: CombinedRow = {
     ...defaultCombinedRow,
     date: moment('2014-03-27'),
@@ -223,9 +234,9 @@ test('should make credit id!', t => {
   t.is(accountancy.makeCreditId(rowAbout), '14-ABOUT-03');
   t.is(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0002');
   t.is(accountancy.makeCreditId(rowAbout), '14-ABOUT-03-0003');
-  accountancy.resetCounters();
 });
 test('should convert QIF content to rows!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToRows(sampleQif);
   const filename = 'data/expected/sample.rows.json';
   // fs.writeJsonSync(filename, actual);
@@ -235,6 +246,7 @@ test('should convert QIF content to rows!', t => {
 });
 
 test('should convert QIF content to rows with ids!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToRowsWithIds(sampleQif);
   const filename = 'data/expected/sample.rows-with-ids.json';
   // fs.writeJsonSync(filename, actual);
@@ -243,7 +255,8 @@ test('should convert QIF content to rows with ids!', t => {
   t.deepEqual(normalise(actual), expected, JSON.stringify(actual));
 });
 
-test('should convert QIF content to bank format!', t => {
+test.only('should convert QIF content to bank format!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToBankCsv(sampleQif, [
     RENT.name,
     LEGAL.name,
@@ -258,6 +271,7 @@ test('should convert QIF content to bank format!', t => {
 });
 
 test('should convert QIF content to expense group!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToExpenseGroupCsv(sampleQif);
   const filename = 'data/expected/sample.rows.group.csv';
   // fs.writeFileSync(filename, actual);
@@ -266,6 +280,7 @@ test('should convert QIF content to expense group!', t => {
 });
 
 test('should convert QIF content to expense summary!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToExpenseSummaryCsv(sampleQif);
   const filename = 'data/expected/sample.rows.expense.summary.csv';
   // fs.writeFileSync(filename, actual);
@@ -274,6 +289,7 @@ test('should convert QIF content to expense summary!', t => {
 });
 
 test('should convert QIF content to credit summary!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToCreditSummaryCsv(sampleQif);
   const filename = 'data/expected/sample.rows.credit.summary.csv';
   fs.writeFileSync(filename, actual);
@@ -282,16 +298,19 @@ test('should convert QIF content to credit summary!', t => {
 });
 
 test('should convert QIF content to expense total!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToExpenseTotal(sampleQif);
   t.deepEqual(actual, 407.56);
 });
 
 test('should convert QIF content to credit total!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToCreditTotal(sampleQif);
   t.deepEqual(actual, 250.02);
 });
 
 test('should convert QIF content to total by category!', t => {
+  const accountancy = picoAccountancy(conf);
   const actual = accountancy.qifToTotalByCategory(sampleQif, INTEREST);
   t.deepEqual(actual, 0.02);
 });

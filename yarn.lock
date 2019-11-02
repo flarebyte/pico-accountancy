@@ -1174,9 +1174,9 @@ configstore@^3.0.0:
     write-file-atomic "^2.0.0"
     xdg-basedir "^3.0.0"
 
-confiture@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/confiture/-/confiture-2.0.1.tgz#1ed458f245a062d194d7b8e21fb089392b5bba04"
+confiture@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/confiture/-/confiture-2.1.1.tgz#171d9c8cb6b03d90590fa380f7b41683d47ed8c2"
   dependencies:
     "@hapi/joi" "^16.1.7"
     "@types/hapi__joi" "^16.0.2"

@@ -1,5 +1,5 @@
 import program from 'commander';
-import confiture from 'confiture';
+import { confiture } from 'confiture';
 import _ from 'lodash';
 import path from 'path';
 import _S from 'string';

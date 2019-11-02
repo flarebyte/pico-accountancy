@@ -19,6 +19,12 @@ const idprefs: ReadonlyArray<any> = [
 const DEBIT = 'DEBIT';
 const CREDIT = 'CREDIT';
 
+const logme = (value: any) => {
+  // tslint:disable-next-line:no-console
+  console.log('>>', value);
+  return value;
+};
+
 const normalizeDate = (line: string): moment.Moment => {
   return moment(_S(line).chompLeft('D').s, 'DD/MM/YYYY');
 };
@@ -184,7 +190,9 @@ const accountancy = (conf: Configuration) => {
       const firstChar = line.charAt(0);
       switch (firstChar) {
         case '^':
-          results.push(joinTempCompositeRow(row));
+          if (row.dateRow) {
+            results.push(joinTempCompositeRow(row));
+          }
           row = { dateRow: null, amountRow: null, descriptionRow: null };
           break;
         case 'D':
@@ -217,7 +225,7 @@ const accountancy = (conf: Configuration) => {
   function incrementCounterByCategory(category: string, month: number): number {
     switch (category) {
       case 'Shares':
-        const countShares = counters.Shares[month] + 1;
+        const countShares = logme(counters.Shares)[month] + 1;
         counters.Shares[month] = countShares;
         return countShares;
       case 'Interest':
@@ -253,7 +261,7 @@ const accountancy = (conf: Configuration) => {
     const YY = row.date.format('YY');
     const MM = row.date.format('MM');
     const month = row.date.month();
-    const categoryName = _.get(row, 'category.name');
+    const categoryName = row.category ? row.category.name : '';
     const newid = incrementCounterByCategory(categoryName, month);
     const num = _S(newid).padLeft(4, '0').s;
     const isFirst = newid === 1;
@@ -399,7 +407,6 @@ const accountancy = (conf: Configuration) => {
     normalizeDescription,
     applyRulesToDescription,
     qifToRows,
-    resetCounters,
     makeDebitId,
     makeCreditId,
     addId,
