@@ -11,7 +11,7 @@ Note: global install is not supported yet, just git clone the repository.
 ```
 alias bank='cat "path/to/file/statement.qif"'
 export DEST='path/to/file/accountancy/2015'
-export PERIOD='2014-2015.csv'
+export PERIOD='2014-2015'
 ```
 
 * Warning: *Convert pound sign to GBP*
@@ -22,32 +22,32 @@ export PERIOD='2014-2015.csv'
 
 Verify that the qif file can be fully analysed. True if no line returned when typing:
 ```
-bank | node dist/cli.js --target bank | grep -i todo
+bank | node build/main/cli.js --target bank | grep -i todo
 ```
 
 Create a statement file in csv format.
 ```
-bank | node dist/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices' > "$DEST/statements$PERIOD"
+bank | node build/main/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices' > "$DEST/statements-$PERIOD.csv"
 ```
 
 ### 2. Creates other entries
 
 Creates a credit file:
 ```
-bank | node dist/cli.js --target credit > "$DEST/credit-$PERIOD"
+bank | node build/main/cli.js --target credit > "$DEST/credit-$PERIOD.csv"
 ```
 Creates a debit file:
 ```
-bank | node dist/cli.js --target debit > "$DEST/debit-$PERIOD"
+bank | node build/main/cli.js --target debit > "$DEST/debit-$PERIOD.csv"
 ```
 Creates a expenses file:
 ```
-bank | node dist/cli.js --target expenses > "$DEST/expenses-$PERIOD"
+bank | node build/main/cli.js --target expenses > "$DEST/expenses-$PERIOD.csv"
 ```
 
 Creates a total file:
 ```
-bank | node dist/cli.js --target total > "$DEST/total-$PERIOD"
+bank | node build/main/cli.js --target total > "$DEST/total-$PERIOD.csv"
 ```
 
 
