@@ -1,27 +1,50 @@
 {
   "name": "pico-accountancy",
-  "version": "0.0.0",
   "description": "Accountancy script for very simple cases",
-  "homepage": "",
+  "version": "0.1.0",
   "author": {
-    "name": "flarebyte",
-    "email": "npm.olivier.huin@flarebyte.com",
-    "url": "https://github.com/flarebyte"
-  },
-  "files": [
-    "build"
-  ],
-  "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
-  "engines": {
-    "node": ">= 8.11.0"
+    "name": "Olivier Huin",
+    "url": "https://github.com/olih"
   },
   "keywords": [
-    "accountancy"
+    "CLI",
+    "Accountancy"
   ],
-  "repository": "flarebyte/pico-accountancy",
   "license": "MIT",
+  "homepage": "https://github.com/flarebyte/pico-accountancy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flarebyte/pico-accountancy.git"
+  },
+  "bugs": "https://github.com/flarebyte/pico-accountancy/issues",
+  "bin": {
+    "pico-accountancy": "dist/src/cli.mjs"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/src/cli.mjs",
+      "default": "./dist/src/cli.mjs",
+      "types": "./dist/src"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
+  },
+  "main": "./dist/src/index.mjs",
+  "files": [
+    "dist/src",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "test": "node --test --loader ts-node/esm test/*.test.ts",
+    "cli": "node --loader ts-node/esm src/cli.mts",
+    "spec": "node --loader ts-node/esm .baldrick-zest.ts"
+  },
   "dependencies": {
     "@types/string": "^0.0.29",
     "bluebird": "^3.7.1",
@@ -33,82 +56,10 @@
     "string": "^3.3.3"
   },
   "devDependencies": {
-    "ava": "1.0.0-beta.7",
-    "codecov": "^3.0.2",
-    "cz-conventional-changelog": "^2.1.0",
-    "gh-pages": "^1.2.0",
-    "npm-run-all": "^4.1.3",
-    "nyc": "^12.0.2",
-    "opn-cli": "^3.1.0",
-    "prettier": "^1.13.4",
-    "standard-version": "^4.4.0",
-    "trash-cli": "^1.4.0",
-    "tslint": "^5.10.0",
-    "tslint-config-prettier": "^1.13.0",
-    "tslint-immutable": "^4.5.4",
-    "typedoc": "^0.12.0",
-    "typescript": "^3.0.1"
-  },
-  "scripts": {
-    "info": "npm-scripts-info",
-    "build": "run-s clean && run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
-    "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "fix:tslint": "tslint --fix --project .",
-    "test": "run-s build test:*",
-    "test:lint": "tslint --project .",
-    "test:unit": "nyc --silent ava",
-    "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
-    "cov": "run-s build test:unit cov:html && opn coverage/index.html",
-    "cov:html": "nyc report --reporter=html",
-    "cov:send": "nyc report --reporter=lcov > coverage.lcov && codecov",
-    "cov:check": "nyc report && nyc check-coverage --lines 95 --functions 95 --branches 80",
-    "doc": "run-s doc:html && opn build/docs/index.html",
-    "doc:html": "typedoc src/ --target ES6 --mode file --out build/docs",
-    "doc:json": "typedoc src/ --target ES6 --mode file --json build/docs/typedoc.json",
-    "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
-    "version": "standard-version",
-    "reset": "git clean -dfx && git reset --hard && npm i",
-    "clean": "trash build test",
-    "all": "run-s reset test cov:check doc:html",
-    "prepare-release": "run-s all version doc:publish",
-    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('confiture must be installed with Yarn: https://yarnpkg.com/')\""
-  },
-  "scripts-info": {
-    "info": "Display information about the package scripts",
-    "build": "Clean and rebuild the project",
-    "fix": "Try to automatically fix any linting problems",
-    "test": "Lint and unit test the project",
-    "watch": "Watch and rebuild the project on save, then rerun relevant tests",
-    "cov": "Rebuild, run tests, then create and open the coverage report",
-    "doc": "Generate HTML API documentation and open it in a browser",
-    "doc:json": "Generate API documentation in typedoc JSON format",
-    "version": "Bump package.json version, update CHANGELOG.md, tag release",
-    "reset": "Delete all untracked files and reset the repo to the last commit",
-    "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
-  },
-  "ava": {
-    "failFast": true,
-    "files": [
-      "build/main/**/*.spec.js"
-    ],
-    "sources": [
-      "build/main/**/*.js"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "prettier": {
-    "singleQuote": true
-  },
-  "nyc": {
-    "exclude": [
-      "**/*.spec.js"
-    ]
+    "baldrick-dev-ts": "^0.17.0",
+    "baldrick-zest-engine": "^0.7.0",
+    "baldrick-zest-mess": "^0.16.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
   }
 }
