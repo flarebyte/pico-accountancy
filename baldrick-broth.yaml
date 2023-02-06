@@ -84,51 +84,6 @@ workflows:
               - title: Run regression on file
                 name: Run regression on {{pest-file.Location}}
                 run: npx baldrick-pest@latest test --spec-file {{pest-file.Location}}
-      pest1:
-        title: Run one acceptance tests for the CLI
-        description: Run one acceptance tests declaratively using YAML files
-        motivation: Check that the CLI application behaves as intended
-        links:
-          - title: Testing with baldrick-pest
-            url: https://github.com/flarebyte/baldrick-pest
-        main:
-          commands:
-              - name: pest-files
-                title: List pest yaml files
-                run: scc pest-spec --include-ext yaml --by-file --format csv
-                onSuccess:
-                  # - save
-                  - csv
-                  - silent
-              - a: prompt-choices
-                title: Prompt for pest filename
-                name: color
-                message: Select color
-                choices:
-                  - blue
-                  - yellow
-                  - red
-              - a: prompt-input
-                title: input
-                name: info
-                message: Enter some info
-              - a: prompt-invisible
-                title: Invisible
-                name: invisible
-                message: Enter some invisible
-              - a: prompt-select
-                title: Prompt for pest filename
-                message: Select file
-                name: pest-filepath
-                select: data.test::pest1::pest-files
-              - title: Display
-                run: echo "Info {{data.test::pest1::color}}"
-                onSuccess:
-                  - debug
-
-              - title: Run regression on file
-                name: Run regression on {{data.test::pest1:pest-filepath}}
-                run: npx baldrick-pest@latest test --spec-file {{data.test::pest1:pest-filepath}}
       cli:
         title: Run client directly
         description: Run the client with ts-node during development

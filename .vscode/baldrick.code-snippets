@@ -1,0 +1,106 @@
+{
+  "filter-no-null": {
+    "scope": "javascript,typescript",
+    "prefix": "filter-no-null",
+    "body": "const removeNulls = <S>(value: S | undefined): value is S => value != null;",
+    "description": "Filter out undefined values"
+  },
+  "eslint-disable-line": {
+    "scope": "javascript,typescript",
+    "prefix": "eslint-disable-line",
+    "body": "// eslint-disable-line $0",
+    "description": "Disable linting a specific Line"
+  },
+  "eslint-disable-next-line": {
+    "scope": "javascript,typescript",
+    "prefix": "eslint-disable-next-line",
+    "body": "// eslint-disable-next-line $0",
+    "description": "Disable linting for next line"
+  },
+  "jest-regression-inline": {
+    "scope": "javascript,typescript",
+    "prefix": "jest-regression-inline",
+    "body": [
+      "import { $1 } from '../src/${TM_FILENAME_BASE/.test//}';",
+      "",
+      "describe('${TM_FILENAME_BASE/.test//}', () => {",
+      "  it('should provide', () => {",
+      "    const opts = {};",
+      "    const actual = $1(opts);",
+      "    expect(actual).toMatchInlineSnapshot();",
+      "  });",
+      "});",
+      ""
+    ],
+    "description": "Unit test to provide regression with a snapshot"
+  },
+  "mock-console": {
+    "scope": "javascript,typescript",
+    "prefix": "mock-console",
+    "body": "jest.spyOn(global.console, \"${1|log,info,warn,error|}\").mockImplementation(() => {});",
+    "description": "Mock console in unit tests"
+  },
+  "stringify": {
+    "scope": "javascript,typescript",
+    "prefix": "stringify",
+    "body": [
+      "const toJsonString = (value: object): string =>",
+      "  JSON.stringify(value, null, 2);"
+    ],
+    "description": "stringify an object"
+  },
+  "error-message-id": {
+    "scope": "javascript,typescript",
+    "prefix": "error-message-id",
+    "body": [
+      "($RANDOM)"
+    ],
+    "description": "Generate an error message id"
+  },
+  "add decision": {
+    "scope": "markdown,md",
+    "prefix": "add decision",
+    "body": [
+      "## Title Fixme",
+      "",
+      "* MUST-HAVE.",
+      "* Created: ${CURRENT_MONTH_NAME} ${CURRENT_YEAR}",
+      "",
+      "### Context and Problem Statement",
+      "",
+      "> Fixme",
+      "",
+      "### Decision Drivers",
+      "",
+      "* Fixme",
+      "",
+      "### Considered Options",
+      "",
+      "* Fixme",
+      "",
+      "### Decision Outcome",
+      "",
+      "Chosen option: Fixme",
+      "",
+      "#### Positive Consequences",
+      "",
+      "* Fixme",
+      "",
+      "#### Negative Consequences",
+      "",
+      "* Fixme",
+      "",
+      "### Pros and Cons of the Options",
+      "",
+      "#### Option title fixme",
+      "",
+      "Description fixme",
+      "",
+      "* Pros: ",
+      "    * Fixme",
+      "* Cons:",
+      "    * Fixme"
+    ],
+    "description": "Adds architecture decision record"
+  }
+}
