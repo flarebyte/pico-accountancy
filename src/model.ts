@@ -1,0 +1,1 @@
+export type ConvertTarget = 'bank'|'debit'|'credit'|'expenses'|'total'
