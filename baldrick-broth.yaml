@@ -1,9 +1,8 @@
 model:
   project:
     title: Accountancy script for very simple cases
-    description: Take your developer workflow to the next level with a custom CLI
-      with relevant documentation for running your task
-    version: 0.1.0
+    description: CLI tool for managing very simple accountancy
+    version: 0.2.0
     keywords:
       - CLI
       - Accountancy
