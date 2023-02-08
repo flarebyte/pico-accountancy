@@ -52,6 +52,7 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
+    "@types/node": "^18.13.0",
     "baldrick-dev-ts": "^0.17.0",
     "baldrick-zest-engine": "^0.7.0",
     "baldrick-zest-mess": "^0.16.0",
