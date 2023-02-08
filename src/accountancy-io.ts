@@ -5,6 +5,16 @@ export type LoadingStatus = Result<
   { message: string; filename: string }
 >;
 
+export type StringLoadingStatus = Result<
+  string,
+  { message: string; filename: string }
+>;
+
+export type StringSavingStatus = Result<
+string,
+  { message: string; filename: string }
+>;
+
 export const readJson = async (filename: string): Promise<LoadingStatus> => {
   let content;
   try {
@@ -25,6 +35,41 @@ export const readJson = async (filename: string): Promise<LoadingStatus> => {
   } catch {
     return fail({
       message: `The json file cannot be parsed: ${filename}`,
+      filename,
+    });
+  }
+};
+
+export const readText = async (
+  filename: string
+): Promise<StringLoadingStatus> => {
+  try {
+    const value = await fs.readFile(filename, { encoding: 'utf8' });
+    return {
+      status: 'success',
+      value,
+    };
+  } catch {
+    return fail({
+      message: `The text file cannot be found: ${filename}`,
+      filename,
+    });
+  }
+};
+
+export const writeText = async (
+  filename: string,
+  content: string
+): Promise<StringSavingStatus> => {
+  try {
+    await fs.writeFile(filename, content, { encoding: 'utf8' });
+    return {
+      status: 'success',
+      value: content,
+    };
+  } catch {
+    return fail({
+      message: `The text file cannot be found: ${filename}`,
       filename,
     });
   }

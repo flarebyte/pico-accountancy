@@ -25,7 +25,9 @@ program
   .command('convert')
   .description('Convert a QIF bank statement to CSV')
   .argument('<source>', 'The source QIF bank statement')
+  .argument('<destination>', 'The destination file')
   .argument('<target>', `The accounting target (${supportedTarget})`, asAccountingTarget)
+  .option('-r, --rules-path <rulespath>', 'The path to the rule configuration', 'pico-accountancy.json')
   .option('-c, --columns <target>', 'Gives a list of columns separated by coma.', commaSeparatedList)
   .action(commandQifToTarget);
 
