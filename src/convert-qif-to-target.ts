@@ -31,7 +31,7 @@ export const commandQifToTarget = async (opts: CommandQifToTargetRunOpts) => {
     );
     return;
   }
-  const accountancy = picoAccountancy(conf);
+  const accountancy = picoAccountancy(modelResult.value);
   switch (opts.target) {
     case 'bank':
       await writeText(

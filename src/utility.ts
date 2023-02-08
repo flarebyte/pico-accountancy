@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { DateRow, AmountRow, Row } from './inner-model.js';
 import { DEBIT, CREDIT } from './accountancy.js';
 
 const chompLeft = (prefix: string) => (text: string) =>
@@ -14,20 +13,20 @@ const toFloat =
   (precision: number) =>
   (value: number): number =>
     parseFloat(value.toFixed(precision));
-const to2Decimals = toFloat(2);
-const normalizeDate = (line: string): moment.Moment => {
+export const to2Decimals = toFloat(2);
+export const normalizeDate = (line: string): moment.Moment => {
   return moment(chompD(line), 'DD/MM/YYYY');
 };
-const isDebitOrCredit = (line: string): 'DEBIT' | 'CREDIT' => {
+export const isDebitOrCredit = (line: string): 'DEBIT' | 'CREDIT' => {
   return chompT(line).trim().startsWith('-') ? DEBIT : CREDIT;
 };
-const normalizeTransfer = (line: string) => {
+export const normalizeTransfer = (line: string) => {
   return chompMinus(chompT(line).trim());
 };
 export const normalizeDescription = (line: string) => {
   return capitalizeWord(chompP(line).replaceAll(',', ' ').trim());
 };
-const sum = (values: number[]): number => {
+export const sum = (values: number[]): number => {
   var total = 0;
   for (const value of values) {
     total += value;
@@ -48,23 +47,3 @@ export const slugify =
           .join('-');
 const splitBySpace = (text: string): string[] => text.split(' ');
 export const dasherize = (text: string) => slugify(splitBySpace)(text);
-export const parseDateRow = (line: string): DateRow => {
-  const rowDate = normalizeDate(line);
-  const yyyymmdd = rowDate.format('YYYY-MM-DD');
-  return { date: rowDate, yyyymmdd };
-};
-export const parseAmountRow = (line: string): AmountRow => {
-  const creditStatus = isDebitOrCredit(line);
-  const amount = normalizeTransfer(line);
-  return creditStatus === DEBIT
-    ? { status: creditStatus, amount, debit: amount, credit: '' }
-    : { status: creditStatus, amount, debit: '', credit: amount };
-};
-
-export const sumDebit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.debit))));
-
-export const sumCredit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.credit))));
-export const sumAmount = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.amount))));
