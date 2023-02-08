@@ -1,5 +1,6 @@
 import { readJson, readText, writeText } from './accountancy-io.js';
 import { AccountancyModel, safeParseBuild } from './accountancy-model.js';
+import { picoAccountancy } from './accountancy.js';
 import { ValidationError } from './format-message.js';
 import { CommandQifToTargetRunOpts } from './model.js';
 import { andThen } from './railway.js';
@@ -30,38 +31,41 @@ export const commandQifToTarget = async (opts: CommandQifToTargetRunOpts) => {
     );
     return;
   }
-
+  const accountancy = picoAccountancy(conf);
   switch (opts.target) {
     case 'bank':
       await writeText(
         opts.destination,
-        qifToBankCsv(qifContent.value, opts.columns)
+        accountancy.qifToBankCsv(qifContent.value, opts.columns || [])
       );
       return;
     case 'debit':
       await writeText(
         opts.destination,
-        qifToExpenseSummaryCsv(qifContent.value)
+        accountancy.qifToExpenseSummaryCsv(qifContent.value)
       );
       return;
     case 'credit':
       await writeText(
         opts.destination,
-        qifToBankCsv(qifContent.value, opts.columns)
+        accountancy.qifToCreditSummaryCsv(qifContent.value)
       );
       return;
     case 'expenses':
       await writeText(
         opts.destination,
-        qifToBankCsv(qifContent.value, opts.columns)
+        accountancy.qifToExpenseGroupCsv(qifContent.value)
       );
       return;
-      case 'total':
-        await writeText(
-          opts.destination,
-          qifToBankCsv(qifContent.value, opts.columns)
-        );
-        return;
-    }
+    case 'total':
+      const creditTotal = accountancy.qifToCreditTotal(qifContent.value);
+      const debitTotal = accountancy.qifToExpenseTotal(qifContent.value);
+      const report = `
+    Summary:
+    credit: ${creditTotal}
+    debit: ${debitTotal}
+    `;
+      await writeText(opts.destination, report);
+      return;
+  }
 };
-

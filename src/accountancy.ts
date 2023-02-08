@@ -1,6 +1,30 @@
-import moment from 'moment';
+import {
+  filterGroupByCategory,
+  filterDebitByCategory,
+  filterCreditByCategory,
+} from './accountancy-filtering.js';
+import {
+  TempCompositeRow,
+  CombinedRow,
+  Row,
+  Category,
+  Configuration,
+  Rule,
+  DescriptionRow,
+  Counters,
+} from './inner-model.js';
+import {
+  normalizeDescription,
+  parseDateRow,
+  parseAmountRow,
+  dasherize,
+  toCSV,
+  sumDebit,
+  sumCredit,
+  sumAmount,
+} from './utility.js';
 
-const idprefs: ReadonlyArray<any> = [
+const idprefs: string[] = [
   'A',
   'B',
   'C',
@@ -14,145 +38,9 @@ const idprefs: ReadonlyArray<any> = [
   'K',
   'L',
 ];
-const DEBIT = 'DEBIT';
-const CREDIT = 'CREDIT';
+export const DEBIT = 'DEBIT';
+export const CREDIT = 'CREDIT';
 
-const chompLeft = (prefix: string) => (text: string) =>
-  text.indexOf(prefix) === 0 ? text.slice(prefix.length) : text;
-
-const chompT = chompLeft('T');
-const chompMinus = chompLeft('-');
-const chompP = chompLeft('P');
-const chompD = chompLeft('D');
-
-const capitalizeWord = (text: string): string =>
-  text.length > 0 ? text[0]?.toUpperCase() + text.slice(1).toLowerCase() : '';
-
-const toFloat =
-  (precision: number) =>
-  (value: number): number =>
-    parseFloat(value.toFixed(precision));
-const to2Decimals = toFloat(2);
-const normalizeDate = (line: string): moment.Moment => {
-  return moment(chompD(line), 'DD/MM/YYYY');
-};
-
-const isDebitOrCredit = (line: string): 'DEBIT' | 'CREDIT' => {
-  return chompT(line).trim().startsWith('-') ? DEBIT : CREDIT;
-};
-
-const normalizeTransfer = (line: string) => {
-  return chompMinus(chompT(line).trim());
-};
-
-const normalizeDescription = (line: string) => {
-  return capitalizeWord(chompP(line).replaceAll(',', ' ').trim());
-};
-
-const sum = (values: number[]): number => {
-  var total = 0;
-  for (const value of values) {
-    total += value;
-  }
-  return total;
-};
-
-const forceToString = (value: string | number): string =>
-  typeof value === 'string' ? value : `${value}`;
-const toCSV = (values: (string | number)[]): string =>
-  values.map(forceToString).join(',');
-
-/**
- * Partial application of a splitter function, that can be used before
- * converting a string to [slug case](https://en.wikipedia.org/wiki/Clean_URL#Slug)
- * @example slug-case
- * @alias kebab-case
- * @param splitter a function that splits the string into words
- */
-export const slugify =
-  (splitter: (textToSplit: string) => string[]) => (text: string) =>
-    text === ''
-      ? ''
-      : splitter(text)
-          .map((t) => t.toLowerCase())
-          .join('-');
-
-const splitBySpace = (text: string): string[] => text.split(' ');
-
-const dasherize = (text: string) => slugify(splitBySpace)(text);
-
-export interface Category {
-  readonly name: string;
-  readonly title: string;
-  readonly category: 'DEBIT' | 'CREDIT';
-}
-
-export interface Rule {
-  readonly ifContains: string;
-  readonly about: string;
-  readonly category: Category;
-}
-
-export interface Configuration {
-  readonly rules: ReadonlyArray<Rule>;
-  readonly categories: ReadonlyArray<Category>;
-}
-
-interface DateRow {
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
-}
-
-interface AmountRow {
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly debit: string;
-  readonly credit: string;
-  readonly amount: string;
-}
-
-interface DescriptionRow {
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
-}
-
-export interface CombinedRow {
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly amount: string;
-  readonly debit: string;
-  readonly credit: string;
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
-}
-
-export interface Row {
-  readonly id: string;
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly amount: string;
-  readonly debit: string;
-  readonly credit: string;
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
-}
-
-interface TempCompositeRow {
-  dateRow: DateRow | null;
-  amountRow: AmountRow | null;
-  descriptionRow: DescriptionRow | null;
-}
-
-interface Counters {
-  commons: number[];
-  Shares: number[];
-  Interest: number[];
-  Invoices: number[];
-}
 const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   if (
     value.amountRow === null ||
@@ -174,75 +62,8 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   };
 };
 
-const parseDateRow = (line: string): DateRow => {
-  const rowDate = normalizeDate(line);
-  const yyyymmdd = rowDate.format('YYYY-MM-DD');
-  return { date: rowDate, yyyymmdd };
-};
-
-const parseAmountRow = (line: string): AmountRow => {
-  const creditStatus = isDebitOrCredit(line);
-  const amount = normalizeTransfer(line);
-  return creditStatus === DEBIT
-    ? { status: creditStatus, amount, debit: amount, credit: '' }
-    : { status: creditStatus, amount, debit: '', credit: amount };
-};
-
-const sumDebit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.debit))));
-
-const sumCredit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.credit))));
-
-const sumAmount = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.amount))));
-
-const filterDebitByCategory =
-  (rows: Row[]) =>
-  (cat: Category): string => {
-    const filtered = rows.filter(
-      (row) => row.status === DEBIT && row.category === cat
-    );
-    if (filtered.length === 0) {
-      return cat.name;
-    }
-    const sumOfCategory = sumDebit(filtered);
-    const summaryForCategory = [cat.name, sumOfCategory];
-    return toCSV(summaryForCategory);
-  };
-
-const filterCreditByCategory =
-  (rows: Row[]) =>
-  (cat: Category): string => {
-    const filtered = rows.filter(
-      (row) => row.status === CREDIT && row.category === cat
-    );
-    if (filtered.length === 0) {
-      return cat.name;
-    }
-    const sumOfCategory = sumCredit(filtered);
-    const summaryForCategory = [cat.name, sumOfCategory];
-    return toCSV(summaryForCategory);
-  };
-
-const filterGroupByCategory =
-  (rows: Row[]) =>
-  (cat: Category): string => {
-    const filtered = rows.filter(
-      (row) => row.status === DEBIT && row.category === cat
-    );
-    if (filtered.length === 0) {
-      return cat.name;
-    }
-    const simplifiedRows = filtered.map((row) =>
-      toCSV(['', "'" + row.id, row.debit])
-    );
-    const simplifiedRowsWithHeader = [cat.name].concat(simplifiedRows);
-    return simplifiedRowsWithHeader.join('\n');
-  };
-
 // Main ...
-const accountancy = (conf: Configuration) => {
+export const picoAccountancy = (conf: Configuration) => {
   const rules = conf.rules;
 
   function applyRulesToDescription(desc: string): Rule | undefined {
@@ -382,8 +203,8 @@ const accountancy = (conf: Configuration) => {
     return toCSV(csvRow);
   }
 
-  export const qifToBankCsv = (qif: string, extraColumns: string[]): string => {
-    const defaultHeaders: ReadonlyArray<string> = [
+  function qifToBankCsv(qif: string, extraColumns: string[]): string {
+    const defaultHeaders: string[] = [
       'Date',
       'Description',
       'Credit',
@@ -455,16 +276,6 @@ const accountancy = (conf: Configuration) => {
   };
 
   return {
-    normalizeDate,
-    isDebitOrCredit,
-    normalizeTransfer,
-    normalizeDescription,
-    applyRulesToDescription,
-    qifToRows,
-    makeDebitId,
-    makeCreditId,
-    addId,
-    qifToRowsWithIds,
     qifToBankCsv,
     qifToExpenseGroupCsv,
     qifToExpenseSummaryCsv,
@@ -474,5 +285,3 @@ const accountancy = (conf: Configuration) => {
     qifToTotalByCategory,
   };
 };
-
-export default accountancy;
