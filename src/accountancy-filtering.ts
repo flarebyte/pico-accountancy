@@ -1,6 +1,6 @@
 import { Row, Category } from './inner-model.js';
 import { DEBIT, CREDIT } from './accountancy.js';
-import { sumDebit, toCSV, sumCredit } from "./normalizeDescription";
+import { sumDebit, toCSV, sumCredit } from "./utility.js";
 
 export const filterDebitByCategory = (rows: Row[]) => (cat: Category): string => {
   const filtered = rows.filter(

@@ -196,7 +196,7 @@ export const picoAccountancy = (conf: Configuration) => {
       row.status,
       categoryName,
     ];
-    const csvExtraRow = _.map(extraColumns, (i) =>
+    const csvExtraRow = extraColumns.map((i) =>
       categoryName === i ? row.amount : ''
     );
     const csvRow = csvDefaultRow.concat(csvExtraRow);
@@ -224,10 +224,9 @@ export const picoAccountancy = (conf: Configuration) => {
   }
 
   const qifToExpenseGroupCsv = (qif: string): string => {
-    const expenseCategories = _.filter(conf.categories, { category: DEBIT });
+    const expenseCategories = conf.categories.filter( value => value.category === 'DEBIT');
     const rows = qifToRowsWithIds(qif);
     const results = expenseCategories.map(
-      expenseCategories,
       filterGroupByCategory(rows)
     );
     const csv = results.join('\n');

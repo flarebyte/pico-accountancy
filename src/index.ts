@@ -1,1 +1,2 @@
-export * from './lib/accountancy';
+import { picoAccountancy } from './accountancy.js';
+export { picoAccountancy };
