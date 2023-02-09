@@ -2,3 +2,4 @@
 /ExperimentalWarning/d
 /yarn run/d
 /trace-warnings/d
+/cli.mts/d
