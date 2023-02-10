@@ -1,0 +1,13 @@
+Usage: pico-accountancy bank [options] <source> <destination>
+
+Convert a QIF bank statement to CSV
+
+Arguments:
+  source                        The source QIF bank statement
+  destination                   The destination file
+
+Options:
+  -r, --rules-path <rulespath>  The path to the rule configuration (default:
+                                "pico-accountancy.json")
+  -c, --columns <target>        Gives a list of columns separated by coma.
+  -h, --help                    display help for command
