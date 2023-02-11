@@ -13,18 +13,22 @@ const toFloat =
   (precision: number) =>
   (value: number): number =>
     parseFloat(value.toFixed(precision));
+
+const collapseWhitespace = (value: string) =>
+  value.replace(/[\s\xa0]+/g, ' ').replace(/^\s+|\s+$/g, '');
+
 export const to2Decimals = toFloat(2);
 export const normalizeDate = (line: string): moment.Moment => {
   return moment(chompD(line), 'DD/MM/YYYY');
 };
 export const isDebitOrCredit = (line: string): 'DEBIT' | 'CREDIT' => {
-  return chompT(line).trim().startsWith('-') ? DEBIT : CREDIT;
+  return collapseWhitespace(chompT(line)).startsWith('-') ? DEBIT : CREDIT;
 };
 export const normalizeTransfer = (line: string) => {
-  return chompMinus(chompT(line).trim());
+  return chompMinus(collapseWhitespace(chompT(line)));
 };
 export const normalizeDescription = (line: string) => {
-  return capitalizeWord(chompP(line).replaceAll(',', ' ').trim());
+  return capitalizeWord(collapseWhitespace(chompP(line).replaceAll(',', ' ')));
 };
 export const sum = (values: number[]): number => {
   var total = 0;
