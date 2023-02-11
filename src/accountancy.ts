@@ -28,44 +28,44 @@ export const DEBIT = 'DEBIT';
 export const CREDIT = 'CREDIT';
 
 interface DateRow {
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
+  date: moment.Moment;
+  yyyymmdd: string;
 }
 interface AmountRow {
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly debit: string;
-  readonly credit: string;
-  readonly amount: string;
+  status: 'DEBIT' | 'CREDIT';
+  debit: string;
+  credit: string;
+  amount: string;
 }
 interface DescriptionRow {
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
+  description: string;
+  about: string | null;
+  category: Category | null;
 }
 
 interface Row {
-  readonly id: string;
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly amount: string;
-  readonly debit: string;
-  readonly credit: string;
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
+  id: string;
+  date: moment.Moment;
+  yyyymmdd: string;
+  status: 'DEBIT' | 'CREDIT';
+  amount: string;
+  debit: string;
+  credit: string;
+  description: string;
+  about: string | null;
+  category: Category | null;
 }
 
 interface CombinedRow {
-  readonly date: moment.Moment;
-  readonly yyyymmdd: string;
-  readonly status: 'DEBIT' | 'CREDIT';
-  readonly amount: string;
-  readonly debit: string;
-  readonly credit: string;
-  readonly description: string;
-  readonly about: string | null;
-  readonly category: Category | null;
+  date: moment.Moment;
+  yyyymmdd: string;
+  status: 'DEBIT' | 'CREDIT';
+  amount: string;
+  debit: string;
+  credit: string;
+  description: string;
+  about: string | null;
+  category: Category | null;
 }
 
 interface TempCompositeRow {
@@ -80,11 +80,16 @@ interface Counters {
   Invoices: number[];
 }
 
+const isCategoryEqual = (
+  actual: Category | null | undefined,
+  expected: Category
+): boolean => (actual ? actual.name === expected.name : false);
+
 const filterDebitByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === DEBIT && row.category === cat
+      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat)
     );
     if (filtered.length === 0) {
       return cat.name;
@@ -97,7 +102,7 @@ const filterCreditByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === CREDIT && row.category === cat
+      (row) => row.status === CREDIT && isCategoryEqual(row.category, cat)
     );
     if (filtered.length === 0) {
       return cat.name;
@@ -110,7 +115,7 @@ const filterGroupByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === DEBIT && row.category === cat
+      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat)
     );
     if (filtered.length === 0) {
       return cat.name;
@@ -289,7 +294,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   function asBankRowCsv(row: Row, extraColumns: string[]): string {
     const categoryName = row.category ? row.category.name : 'TODO';
-    const csvDefaultRow: ReadonlyArray<string> = [
+    const csvDefaultRow: Array<string> = [
       row.yyyymmdd,
       row.description,
       row.credit,
@@ -316,7 +321,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
       'Category',
     ];
     const headers = defaultHeaders.concat(extraColumns);
-    const header: ReadonlyArray<any> = [toCSV(headers)];
+    const header: Array<any> = [toCSV(headers)];
     const rows = qifToRowsWithIds(qif).map((row) =>
       asBankRowCsv(row, extraColumns)
     );

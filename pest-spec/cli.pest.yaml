@@ -14,18 +14,30 @@ cases:
  credit:
     title: Extract the credit lines
     steps:
-      - title: run cedit
+      - title: run credit
         run: yarn cli credit pest-spec/fixture/sample.qif temp/credit.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save credit snapshot
+        run: cat temp/credit.csv
+        expect:
+          snapshot: credit.csv
  debit:
     title: Extract the debit lines
     steps:
       - title: run debit
         run: yarn cli debit pest-spec/fixture/sample.qif temp/debit.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save debit snapshot
+        run: cat temp/debit.csv
+        expect:
+          snapshot: debit.csv
  expenses:
     title: Extract the expenses lines
     steps:
       - title: run expenses
         run: yarn cli expenses pest-spec/fixture/sample.qif temp/expenses.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save expenses snapshot
+        run: cat temp/expenses.csv
+        expect:
+          snapshot: expenses.csv
  total:
     title: Extract the total summary
     steps:
