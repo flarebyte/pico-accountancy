@@ -14,25 +14,28 @@ type AccountancyDocs = {
 };
 
 export const loadAccountancyFiles = async (
+  source: string,
+  _destination: string,
   opts: CommandQifToTargetRunOpts
 ): Promise<AccountancyDocs> => {
-  const readingResult = await readJson(opts.rulespath);
+  console.log(JSON.stringify(opts));
+  const readingResult = await readJson(opts.rulesPath);
   const modelResult = andThen<object, AccountancyModel, RunConvertFailure>(
     safeParseBuild
   )(readingResult);
 
   if (modelResult.status === 'failure') {
     console.error(
-      `Loading and parsing the pico-accountancy configuration file ${opts.rulespath} failed`,
+      `Loading and parsing the pico-accountancy configuration file ${opts.rulesPath} failed`,
       modelResult.error
     );
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit
   }
 
-  const qifContent = await readText(opts.sourceQifPath);
+  const qifContent = await readText(source);
   if (qifContent.status === 'failure') {
     console.error(
-      `Loading the pico-accountancy QIF file ${opts.sourceQifPath} failed`,
+      `Loading the pico-accountancy QIF file ${source} failed`,
       qifContent.error
     );
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit

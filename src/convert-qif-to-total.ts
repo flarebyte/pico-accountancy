@@ -6,8 +6,16 @@ import { CommandQifToTargetRunOpts } from './model.js';
 /**
  * Check that sum are consistent
  */
-export const commandQifToTotal = async (opts: CommandQifToTargetRunOpts) => {
-  const { qifContent, ruleModel } = await loadAccountancyFiles(opts);
+export const commandQifToTotal = async (
+  source: string,
+  destination: string,
+  opts: CommandQifToTargetRunOpts
+) => {
+  const { qifContent, ruleModel } = await loadAccountancyFiles(
+    source,
+    destination,
+    opts
+  );
   const accountancy = picoAccountancy(ruleModel);
 
   const creditTotal = accountancy.qifToCreditTotal(qifContent);
@@ -17,5 +25,5 @@ export const commandQifToTotal = async (opts: CommandQifToTargetRunOpts) => {
     credit: ${creditTotal}
     debit: ${debitTotal}
     `;
-  await writeText(opts.destination, report);
+  await writeText(destination, report);
 };

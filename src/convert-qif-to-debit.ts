@@ -6,12 +6,17 @@ import { CommandQifToTargetRunOpts } from './model.js';
 /**
  * Ex: Utilities, Software, Hardware
  */
-export const commandQifToDebit = async (opts: CommandQifToTargetRunOpts) => {
-  const { qifContent, ruleModel } = await loadAccountancyFiles(opts);
+export const commandQifToDebit = async (
+  source: string,
+  destination: string,
+  opts: CommandQifToTargetRunOpts
+) => {
+  const { qifContent, ruleModel } = await loadAccountancyFiles(
+    source,
+    destination,
+    opts
+  );
   const accountancy = picoAccountancy(ruleModel);
 
-  await writeText(
-    opts.destination,
-    accountancy.qifToExpenseSummaryCsv(qifContent)
-  );
+  await writeText(destination, accountancy.qifToExpenseSummaryCsv(qifContent));
 };

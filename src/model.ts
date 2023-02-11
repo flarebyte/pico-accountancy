@@ -1,6 +1,4 @@
 export type CommandQifToTargetRunOpts = {
-  sourceQifPath: string;
-  destination: string;
-  rulespath: string;
+  rulesPath: string;
   columns?: string[];
 };
