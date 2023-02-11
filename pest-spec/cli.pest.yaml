@@ -7,6 +7,10 @@ cases:
     steps:
       - title: run bank
         run: yarn cli bank pest-spec/fixture/sample.qif temp/bank.csv --rules-path  pest-spec/fixture/pico-accountancy.json --columns Rent,Legal,Shares,Interest,Invoice
+      - title: save bank snapshot
+        run: cat temp/bank.csv
+        expect:
+          snapshot: bank.csv
  credit:
     title: Extract the credit lines
     steps:
@@ -27,7 +31,7 @@ cases:
     steps:
       - title: run total
         run: yarn cli total pest-spec/fixture/sample.qif temp/total.txt --rules-path  pest-spec/fixture/pico-accountancy.json
-      - title: save snapshot
+      - title: save total snapshot
         run: cat temp/total.txt
         expect:
           snapshot: total.txt
