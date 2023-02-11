@@ -1,0 +1,20 @@
+---
+testing:
+  style: function a
+  import: ./src/accountancy-model.ts
+  function: getSchema
+cases:
+  schema:
+    a: snapshot
+    title: Produce a JSON schema
+    params:
+      - from: string
+        value: default
+    result:
+      transform:
+        - style: config -> function a
+          import: baldrick-zest-mess
+          function: fromZodToJsonSchema
+          config:
+            name: pico-accountancy-schema
+    snapshot: JSON
