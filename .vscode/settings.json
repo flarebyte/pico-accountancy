@@ -7,7 +7,7 @@
   },
   "json.schemas": [
     {
-      "fileMatch": ["/pico-accountancy.json"],
+      "fileMatch": ["./pest-spec/fixture/pico-accountancy.json"],
       "url": "./spec/snapshots/accountancy-model/get-schema--schema.json"
     }
   ]
