@@ -31,9 +31,9 @@ export const schema = z
 
 export type AccountancyModel = z.infer<typeof schema>;
 
-export type Category = z.infer<typeof category>
+export type Category = z.infer<typeof category>;
 
-export type Rule = z.infer<typeof rule>
+export type Rule = z.infer<typeof rule>;
 
 export type AccountancyModelValidation = Result<
   AccountancyModel,

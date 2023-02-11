@@ -11,7 +11,7 @@ export type StringLoadingStatus = Result<
 >;
 
 export type StringSavingStatus = Result<
-string,
+  string,
   { message: string; filename: string }
 >;
 

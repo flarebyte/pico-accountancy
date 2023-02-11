@@ -12,10 +12,10 @@ const capitalizeWord = (text: string): string =>
 const toFloat =
   (precision: number) =>
   (value: number): number =>
-    parseFloat(value.toFixed(precision));
+    Number.parseFloat(value.toFixed(precision));
 
 const collapseWhitespace = (value: string) =>
-  value.replace(/[\s\xa0]+/g, ' ').replace(/^\s+|\s+$/g, '');
+  value.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
 
 export const to2Decimals = toFloat(2);
 export const normalizeDate = (line: string): moment.Moment => {
@@ -31,7 +31,7 @@ export const normalizeDescription = (line: string) => {
   return capitalizeWord(collapseWhitespace(chompP(line).replaceAll(',', ' ')));
 };
 export const sum = (values: number[]): number => {
-  var total = 0;
+  let total = 0;
   for (const value of values) {
     total += value;
   }

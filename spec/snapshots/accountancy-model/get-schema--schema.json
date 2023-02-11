@@ -13,7 +13,7 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 30,
-                "pattern": "[A-Za-z0-9]",
+                "pattern": "[\\dA-Za-z]",
                 "description": "A short name for the category"
               },
               "title": {

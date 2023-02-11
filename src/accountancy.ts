@@ -141,12 +141,12 @@ const parseAmountRow = (line: string): AmountRow => {
 };
 
 const sumDebit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.debit))));
+  to2Decimals(sum(rows.map((row) => Number.parseFloat(row.debit))));
 
 const sumCredit = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.credit))));
+  to2Decimals(sum(rows.map((row) => Number.parseFloat(row.credit))));
 const sumAmount = (rows: Row[]): number =>
-  to2Decimals(sum(rows.map((row) => parseFloat(row.amount))));
+  to2Decimals(sum(rows.map((row) => Number.parseFloat(row.amount))));
 
 const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   if (
@@ -154,7 +154,7 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
     value.dateRow === null ||
     value.descriptionRow === null
   ) {
-    throw Error('Corrupted data');
+    throw new Error('Corrupted data');
   }
   return {
     date: value.dateRow.date,
@@ -168,6 +168,33 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
     category: value.descriptionRow.category,
   };
 };
+
+function resetCounters(): Counters {
+  return {
+    commons: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    Shares: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    Interest: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    Invoices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  };
+}
+
+function asBankRowCsv(row: Row, extraColumns: string[]): string {
+  const categoryName = row.category ? row.category.name : 'TODO';
+  const csvDefaultRow: Array<string> = [
+    row.yyyymmdd,
+    row.description,
+    row.credit,
+    row.debit,
+    "'" + row.id,
+    row.status,
+    categoryName,
+  ];
+  const csvExtraRow = extraColumns.map((i) =>
+    categoryName === i ? row.amount : ''
+  );
+  const csvRow = csvDefaultRow.concat(csvExtraRow);
+  return toCSV(csvRow);
+}
 
 // Main ...
 export const picoAccountancy = (conf: AccountancyModel) => {
@@ -197,7 +224,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
       descriptionRow: null,
     };
 
-    lines.forEach((line) => {
+    for (const line of lines) {
       const firstChar = line.charAt(0);
       switch (firstChar) {
         case '^':
@@ -219,34 +246,29 @@ export const picoAccountancy = (conf: AccountancyModel) => {
         default:
           break;
       }
-    });
+    }
     return results;
   }
 
-  function resetCounters(): Counters {
-    return {
-      commons: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      Shares: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      Interest: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      Invoices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    };
-  }
   const counters = resetCounters();
 
   function incrementCounterByCategory(category: string, month: number): number {
     switch (category) {
-      case 'Shares':
+      case 'Shares': {
         const countShares = (counters.Shares[month] || 0) + 1;
         counters.Shares[month] = countShares;
         return countShares;
-      case 'Interest':
+      }
+      case 'Interest': {
         const countInterest = (counters.Interest[month] || 0) + 1;
         counters.Interest[month] = countInterest;
         return countInterest;
-      case 'Invoices':
+      }
+      case 'Invoices': {
         const countInvoices = (counters.Invoices[month] || 0) + 1;
         counters.Invoices[month] = countInvoices;
         return countInvoices;
+      }
       default:
         return 0;
     }
@@ -276,7 +298,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     const almostId = isFirst
       ? `${YY}-${about}-${MM}`
       : `${YY}-${about}-${MM}-${num}`;
-    const id = almostId.replace(/[-]+/g, '-');
+    const id = almostId.replace(/-+/g, '-');
     return id;
   }
 
@@ -292,24 +314,6 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     return rows.map(addId);
   }
 
-  function asBankRowCsv(row: Row, extraColumns: string[]): string {
-    const categoryName = row.category ? row.category.name : 'TODO';
-    const csvDefaultRow: Array<string> = [
-      row.yyyymmdd,
-      row.description,
-      row.credit,
-      row.debit,
-      "'" + row.id,
-      row.status,
-      categoryName,
-    ];
-    const csvExtraRow = extraColumns.map((i) =>
-      categoryName === i ? row.amount : ''
-    );
-    const csvRow = csvDefaultRow.concat(csvExtraRow);
-    return toCSV(csvRow);
-  }
-
   function qifToBankCsv(qif: string, extraColumns: string[]): string {
     const defaultHeaders: string[] = [
       'Date',
@@ -320,12 +324,12 @@ export const picoAccountancy = (conf: AccountancyModel) => {
       'Type',
       'Category',
     ];
-    const headers = defaultHeaders.concat(extraColumns);
-    const header: Array<any> = [toCSV(headers)];
+    const headers = [...defaultHeaders, ...extraColumns];
+    const header = [toCSV(headers)];
     const rows = qifToRowsWithIds(qif).map((row) =>
       asBankRowCsv(row, extraColumns)
     );
-    const headerAndRows = header.concat(rows);
+    const headerAndRows = [...header, ...rows];
     const csv = headerAndRows.join('\n');
     return csv;
   }

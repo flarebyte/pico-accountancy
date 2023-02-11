@@ -8,7 +8,7 @@ export const stringy = {
     .trim()
     .min(1)
     .max(30)
-    .regex(/[A-Za-z0-9]/)
+    .regex(/[\dA-Za-z]/)
     .describe('A short name for the category'),
   title: z
     .string()
