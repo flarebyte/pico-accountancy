@@ -1,4 +1,4 @@
-"Date","Description","Credit","Debit","Id","Type","Category","Rent","Legal","Shares","Interest","Invoice"
+"Date","Description","Credit","Debit","Id","Type","Category","Rent","Legal","Shares","Interest","Invoices"
 "2015-03-10","Card payment to companies house 13.00 gbp on 08-03-2015 13.00","","13.00","'15C-0001-CONTRACT","DEBIT","Legal","","13.00","","",""
 "2015-03-18","Card payment to ltd r/t 28.78 gbp on 16-03-2015 28.78","","28.78","'15C-0002-STUFF","DEBIT","Administration","","","","",""
 "2015-03-20","Faster payments receipt ref.shares from director 250.00","250.00","","'15-CAP-03","CREDIT","Shares","","","250.00","",""

@@ -6,7 +6,7 @@ cases:
     title: Convert to a bank statement
     steps:
       - title: run bank
-        run: yarn cli bank pest-spec/fixture/sample.qif temp/bank.csv --rules-path  pest-spec/fixture/pico-accountancy.json --columns Rent,Legal,Shares,Interest,Invoice
+        run: yarn cli bank pest-spec/fixture/sample.qif temp/bank.csv --rules-path  pest-spec/fixture/pico-accountancy.json --columns Rent,Legal,Shares,Interest,Invoices
       - title: save bank snapshot
         run: cat temp/bank.csv
         expect:
