@@ -33,10 +33,13 @@ export const sum = (values: number[]): number => {
   }
   return total;
 };
-const forceToString = (value: string | number): string =>
-  typeof value === 'string' ? value : `${value}`;
+const asCsvValue = (value: string | number): string => {
+  const str = typeof value === 'string' ? value : `${value}`;
+  const withoutDQuote = str.replaceAll('"', ' ');
+  return `"${withoutDQuote}"`;
+};
 export const toCSV = (values: (string | number)[]): string =>
-  values.map(forceToString).join(',');
+  values.map(asCsvValue).join(',');
 
 export const slugify =
   (splitter: (textToSplit: string) => string[]) => (text: string) =>

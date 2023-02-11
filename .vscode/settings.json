@@ -3,5 +3,6 @@
   "yaml.schemas": {
     "./script/schema/project.schema.json": "script/data/project.yaml",
     "https://raw.githubusercontent.com/flarebyte/baldrick-pest/main/spec/snapshots/pest-model/get-schema--schema.json": "*.pest.yaml",
+    "https://raw.githubusercontent.com/flarebyte/baldrick-broth/main/spec/snapshots/build-model/get-schema--schema.json": "baldrick-broth.yaml",
   }
 }
