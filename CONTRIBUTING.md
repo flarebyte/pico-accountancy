@@ -1,4 +1,4 @@
-# Contributing
+ # Contributing
 
 Welcome ! and many thanks for taking the time to contribute !
 
@@ -17,22 +17,47 @@ in all your interactions with the project.
 
 The following commands should get you started:
 
+Setup an alias:
+
+```
+alias broth='npx baldrick-broth'
+```
+
+or if you prefer to always use the latest version:
+
+```
+alias broth='npx baldrick-broth@latest'
+```
+
+Install the `npm` dependencies:
+
 ```bash
 yarn install
-npx baldrick-broth@latest test zest
+```
+
+Run the `zest` unit tests:
+
+```bash
+broth test spec
+```
+
+Run the `pest` CLI integration tests:
+
+```bash
+broth test pest
 ```
 
 A list of [most used commands](MAINTENANCE.md) is available:
 
 ```bash
-npx baldrick-broth@latest
+broth
 ```
 
 Please keep an eye on test coverage, bundle size and documentation.
 When you are ready for a pull request:
 
 ```bash
-npx baldrick-broth@latest release ready
+broth release ready
 ```
 
 You can also simulate [Github actions](https://docs.github.com/en/actions)
@@ -43,7 +68,7 @@ ubuntu-latest=node:16-buster`
 To run the pipeline:
 
 ```bash
-npx baldrick-broth@latest github act
+broth github act
 ```
 
 ## Pull Request Process
@@ -57,5 +82,5 @@ This would be done by the main maintainers of the project. Locally for now as
 updates are pretty infrequent, and some of tests have to be done manually.
 
 ```bash
-npx baldrick-broth@latest release publish
+broth release publish
 ```
