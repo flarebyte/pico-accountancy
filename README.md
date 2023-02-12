@@ -1,66 +1,62 @@
-# pico-accountancy [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+# pico-accountancy
+
+![npm](https://img.shields.io/npm/v/pico-accountancy) ![Build
+status](https://github.com/flarebyte/pico-accountancy/actions/workflows/main.yml/badge.svg)
+![npm bundle size](https://img.shields.io/bundlephobia/min/pico-accountancy)
+
+![npm type definitions](https://img.shields.io/npm/types/pico-accountancy)
+![node-current](https://img.shields.io/node/v/pico-accountancy)
+![NPM](https://img.shields.io/npm/l/pico-accountancy)
+
 > Accountancy script for very simple cases
+
+CLI tool for converting a QIF bank statement to the different csv files
+useful for accountancy
+
+Highlights:
+
+-   Written in `Typescript`
+-   Understand QIF format
+-   Automatically convert rows based on search terms
+
+## Documentation and links
+
+-   [Code Maintenance](MAINTENANCE.md)
+-   [Code Of Conduct](CODE_OF_CONDUCT.md)
+-   [Api for pico-accountancy](API.md)
+-   [Contributing](CONTRIBUTING.md)
+-   [Glossary](GLOSSARY.md)
+-   [Diagram for the code base](INTERNAL.md)
+-   [Vocabulary used in the code base](CODE_VOCABULARY.md)
+-   [Architectural Decision Records](DECISIONS.md)
+-   [Contributors](https://github.com/flarebyte/pico-accountancy/graphs/contributors)
+-   [Dependencies](https://github.com/flarebyte/pico-accountancy/network/dependencies)
+-   [Usage](USAGE.md)
+
+## Related
+
+-   [baldrick-zest-engine](https://github.com/flarebyte/baldrick-zest-engine)
+    Run tests declaratively with a few cunning plans
 
 ## Installation
 
-Note: global install is not supported yet, just git clone the repository.
+This package is [ESM
+only](https://blog.sindresorhus.com/get-ready-for-esm-aa53530b3f77).
 
-## Usage
-
-### 0. Create an alias to read the QIF file with bank statement
-```
-alias bank='cat "path/to/file/statement.qif"'
-export DEST='path/to/file/accountancy/2015'
-export PERIOD='2014-2015'
+```bash
+yarn global add pico-accountancy
+pico-accountancy --help
 ```
 
-* Warning: *Convert pound sign to GBP*
-* Only select the wanted transactions from the qif file.
-* Make sure you have a valid conf.json in .pico-accountancy.
+Or alternatively run it:
 
-### 1. Normalize the bank statement
-
-Verify that the qif file can be fully analysed. True if no line returned when typing:
-```
-bank | node build/main/cli.js --target bank | grep -i todo
+```bash
+npx pico-accountancy --help
 ```
 
-Create a statement file in csv format.
-```
-bank | node build/main/cli.js --target bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices' > "$DEST/statements-$PERIOD.csv"
-```
+If you want to tun the latest version from github. Mostly useful for dev:
 
-### 2. Creates other entries
-
-Creates a credit file:
+```bash
+git clone git@github.com:flarebyte/pico-accountancy.git
+yarn global add `pwd`
 ```
-bank | node build/main/cli.js --target credit > "$DEST/credit-$PERIOD.csv"
-```
-Creates a debit file:
-```
-bank | node build/main/cli.js --target debit > "$DEST/debit-$PERIOD.csv"
-```
-Creates a expenses file:
-```
-bank | node build/main/cli.js --target expenses > "$DEST/expenses-$PERIOD.csv"
-```
-
-Creates a total file:
-```
-bank | node build/main/cli.js --target total > "$DEST/total-$PERIOD.csv"
-```
-
-
-## License
-
-MIT © [flarebyte](https://github.com/flarebyte)
-
-
-[npm-image]: https://badge.fury.io/js/pico-accountancy.svg
-[npm-url]: https://npmjs.org/package/pico-accountancy
-[travis-image]: https://travis-ci.org/flarebyte/pico-accountancy.svg?branch=master
-[travis-url]: https://travis-ci.org/flarebyte/pico-accountancy
-[daviddm-image]: https://david-dm.org/flarebyte/pico-accountancy.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/flarebyte/pico-accountancy
-[coveralls-image]: https://coveralls.io/repos/flarebyte/pico-accountancy/badge.svg
-[coveralls-url]: https://coveralls.io/r/flarebyte/pico-accountancy

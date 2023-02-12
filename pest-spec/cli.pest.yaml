@@ -1,0 +1,52 @@
+---
+title: pico-accountancy CLI
+description: Acceptance testing of pico-accountancy CLI application
+cases:
+ bank:
+    title: Convert to a bank statement
+    steps:
+      - title: run bank
+        run: yarn cli bank pest-spec/fixture/sample.qif temp/bank.csv --rules-path  pest-spec/fixture/pico-accountancy.json --columns Rent,Legal,Shares,Interest,Invoices
+      - title: save bank snapshot
+        run: cat temp/bank.csv
+        expect:
+          snapshot: bank.csv
+ credit:
+    title: Extract the credit lines
+    steps:
+      - title: run credit
+        run: yarn cli credit pest-spec/fixture/sample.qif temp/credit.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save credit snapshot
+        run: cat temp/credit.csv
+        expect:
+          snapshot: credit.csv
+ debit:
+    title: Extract the debit lines
+    steps:
+      - title: run debit
+        run: yarn cli debit pest-spec/fixture/sample.qif temp/debit.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save debit snapshot
+        run: cat temp/debit.csv
+        expect:
+          snapshot: debit.csv
+ expenses:
+    title: Extract the expenses lines
+    steps:
+      - title: run expenses
+        run: yarn cli expenses pest-spec/fixture/sample.qif temp/expenses.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save expenses snapshot
+        run: cat temp/expenses.csv
+        expect:
+          snapshot: expenses.csv
+ total:
+    title: Extract the total summary
+    steps:
+      - title: run total
+        run: yarn cli total pest-spec/fixture/sample.qif temp/total.txt --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save total snapshot
+        run: cat temp/total.txt
+        expect:
+          snapshot: total.txt
+        
+
+       

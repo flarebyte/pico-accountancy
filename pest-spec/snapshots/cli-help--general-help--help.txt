@@ -1,0 +1,15 @@
+Usage: pico-accountancy [options] [command]
+
+CLI for very simple accountancy cases
+
+Options:
+  -V, --version                              output the version number
+  -h, --help                                 display help for command
+
+Commands:
+  bank [options] <source> <destination>      Convert a QIF bank statement to CSV
+  credit [options] <source> <destination>    Group a QIF bank statement by credit
+  debit [options] <source> <destination>     Group a QIF bank statement by debit
+  expenses [options] <source> <destination>  Organise all the expenses from a QIF bank statement
+  total [options] <source> <destination>     Summarize the total from a QIF bank statement
+  help [command]                             display help for command

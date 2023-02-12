@@ -1,0 +1,76 @@
+---
+title: pico-accountancy help
+description: Acceptance testing of pico-accountancy CLI application
+cases:
+  general-help:
+    title: Display help for a help-command
+    steps:
+      - title: run help help-command
+        run: yarn cli --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: help.txt
+  bank-help:
+    title: Display help for the bank command
+    steps:
+      - title: run help bank
+        run: yarn cli bank --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: bank-help.txt
+  credit-help:
+    title: Display help for the credit command
+    steps:
+      - title: run help credit
+        run: yarn cli credit --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: credit-help.txt
+  debit-help:
+    title: Display help for the debit command
+    steps:
+      - title: run help debit
+        run: yarn cli debit --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: debit-help.txt
+  expenses-help:
+    title: Display help for the expenses command
+    steps:
+      - title: run help expenses
+        run: yarn cli expenses --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: expenses-help.txt
+  total-help:
+    title: Display help for the total command
+    steps:
+      - title: run help total
+        run: yarn cli total --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: total-help.txt

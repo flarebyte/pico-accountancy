@@ -4,5 +4,5 @@
 "2015-03-20","Faster payments receipt ref.shares from director 250.00","250.00","","'15-CAP-03","CREDIT","Shares","","","250.00","",""
 "2015-03-25","Direct debit payment to ltd-management ref 0000001 mandate no 0002 234.13","","234.13","'15C-0003-SPACE-1","DEBIT","Rent","234.13","","","",""
 "2015-03-30","Interest paid after tax 0.00 deducted 0.02","0.02","","'15-INTEREST-03","CREDIT","Interest","","","","0.02",""
-"2015-04-04","Card payment to google 2.75 gbp on 02-04-2015 2.75","","2.75","'15D-0001--GOOGLE","DEBIT","Administration","","","","",""
+"2015-04-04","Card payment to google 2.75 gbp on 02-04-2015 2.75","","2.75","'15D-0001-GOOGLE","DEBIT","Administration","","","","",""
 "2015-04-07","Direct debit payment to ltd camden di ref ca/1977 mandate no 0003 128.90","","128.90","'15D-0002-SPACE-2","DEBIT","Rent","128.90","","","",""

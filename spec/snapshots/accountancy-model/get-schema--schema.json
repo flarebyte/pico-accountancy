@@ -1,0 +1,85 @@
+{
+  "$ref": "#/definitions/pico-accountancy-schema",
+  "definitions": {
+    "pico-accountancy-schema": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 30,
+                "pattern": "[\\dA-Za-z]",
+                "description": "A short name for the category"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "A short title that summarizes the category"
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "DEBIT",
+                  "CREDIT"
+                ],
+                "description": "Credit or Debit category"
+              }
+            },
+            "required": [
+              "name",
+              "title",
+              "category"
+            ],
+            "additionalProperties": false,
+            "description": "A category of financial transaction"
+          },
+          "description": "A list of accounting categories"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ifContains": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "Term to search"
+              },
+              "about": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "What the rule is about"
+              },
+              "category": {
+                "$ref": "#/definitions/pico-accountancy-schema/properties/categories/items"
+              }
+            },
+            "required": [
+              "ifContains",
+              "about",
+              "category"
+            ],
+            "additionalProperties": false,
+            "description": "Describe an extraction rule"
+          },
+          "description": "A list of rules to describe the extraction"
+        }
+      },
+      "required": [
+        "categories",
+        "rules"
+      ],
+      "additionalProperties": false,
+      "description": "The rules and categories using for processing the accounting data"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

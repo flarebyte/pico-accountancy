@@ -1,0 +1,141 @@
+{
+    "categories": [
+      {
+        "name": "Shares",
+        "title": "Shares",
+        "category": "CREDIT"
+      },
+      {
+        "name": "Rent",
+        "title": "Office rent",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Insurance",
+        "title": "Insurance",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Cash",
+        "title": "Petty Cash",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Administration",
+        "title": "General Administration",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Utilities",
+        "title": "Utilities",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Legal",
+        "title": "Legal/professional fees",
+        "category": "DEBIT"
+      },
+      {
+        "name": "Interest",
+        "title": "Interest",
+        "category": "CREDIT"
+      },
+      {
+        "name": "Invoices",
+        "title": "Invoices",
+        "category": "CREDIT"
+      }
+    ],
+    "rules": [
+      {
+        "ifContains": "LTD-MANAGEMENT",
+        "about": "space 1",
+        "category": {
+          "name": "Rent",
+          "title": "Office rent",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "LTD Contract",
+        "about": "contract",
+        "category": {
+          "name": "Legal",
+          "title": "Legal/professional fees",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "LTD CAMDEN",
+        "about": "space 2",
+        "category": {
+          "name": "Rent",
+          "title": "Office rent",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "GOOGLE",
+        "about": "Google",
+        "category": {
+          "name": "Administration",
+          "title": "General Administration",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "GOOGLE",
+        "about": "Google",
+        "category": {
+          "name": "Administration",
+          "title": "General Administration",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "COMPANIES HOUSE",
+        "about": "contract",
+        "category": {
+          "name": "Legal",
+          "title": "Legal/professional fees",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "LTD R/T",
+        "about": "stuff",
+        "category": {
+          "name": "Administration",
+          "title": "General Administration",
+          "category": "DEBIT"
+        }
+      },
+      {
+        "ifContains": "SHARES",
+        "about": "Cap",
+        "category": {
+          "name": "Shares",
+          "title": "Shares",
+          "category": "CREDIT"
+        }
+      },
+      {
+        "ifContains": "INTEREST",
+        "about": "Interest",
+        "category": {
+          "name": "Interest",
+          "title": "Interest",
+          "category": "CREDIT"
+        }
+      },
+      {
+        "ifContains": "INVOICE",
+        "about": "Invoice",
+        "category": {
+          "name": "Invoices",
+          "title": "Invoices",
+          "category": "CREDIT"
+        }
+      }
+    ]
+  }

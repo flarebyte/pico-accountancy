@@ -1,0 +1,431 @@
+model:
+  project:
+    title: Accountancy script for very simple cases
+    description: CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
+    version: 0.2.0
+    keywords:
+      - CLI
+      - Accountancy
+  readme:
+    highlights:
+      - Written in `Typescript`
+      - Understand QIF format
+      - Automatically convert rows based on search terms
+    links:
+      - "[Usage](USAGE.md)"
+    related:
+      - "[baldrick-zest-engine](https://github.com/flarebyte/baldrick-zest-engi\
+        ne) Run tests declaratively with a few cunning plans"
+  github:
+    account: flarebyte
+    name: pico-accountancy
+  copyright:
+    holder: Flarebyte.com
+    startYear: 2015
+  license: MIT
+  author:
+    name: Olivier Huin
+    url: https://github.com/olih
+  implementation:
+    tags:
+      - cli
+      - zest
+      - pest
+      - zod
+      - railway
+      - commander
+  workflow-version: 0.1.0
+workflows:
+  test:
+    title: Test the library
+    description: Test the library for defects
+    tasks:
+      jest:
+        title: Run the unit tests with Jest
+        description: Use the Jest framework to run unit test (deprecated)
+        links:
+          - title: Jest is a JavaScript Testing Framework
+            url: https://jestjs.io/
+        main:
+          commands:
+            - title: Test all test files in test folder
+              run: npx baldrick-dev-ts test check
+      spec:
+        title: Run unit tests declaratively
+        description: Run unit tests for pure functions declaratively using YAML files
+        motivation: Check that the units of code behave as intended
+        links:
+          - title: Baldrick Zest run tests declaratively
+            url: https://github.com/flarebyte/baldrick-zest-engine
+        main:
+          commands:
+            - title: Run all baldrick zest files
+              run: node --loader ts-node/esm .baldrick-zest.ts
+      pest:
+        title: Run acceptance tests for the CLI
+        description: Run acceptance tests declaratively using YAML files
+        motivation: Check that the CLI application behaves as intended
+        links:
+          - title: Testing with baldrick-pest
+            url: https://github.com/flarebyte/baldrick-pest
+          - title: Counting lines of code in many programming languages
+            url: https://github.com/boyter/scc
+        before:
+          commands:
+            - name: pest-files
+              title: List pest yaml files
+              run: scc pest-spec --include-ext yaml --by-file --format csv
+              onSuccess:
+                - save
+                - csv
+                - silent
+        main:
+          each:
+            - name: pest-file
+              values: data.test::pest::pest-files
+          commands:
+            - title: Run regression on file
+              name: Run regression on {{pest-file.Location}}
+              run: npx baldrick-pest@latest test --spec-file {{pest-file.Location}}
+      cli:
+        title: Run client directly
+        description: Run the client with ts-node during development
+        motivation:
+          Simulate a CLI app in development without the need to install it
+          globally
+        main:
+          commands:
+            - title: Run the CLI locally
+              run: node --loader ts-node/esm src/cli.mts
+  transpile:
+    title: Transpile the source code
+    description: Transpile source code
+    tasks:
+      ts:
+        title: Transpile typescript
+        description: Generate javascript from the typescript source code
+        motivation: Javascript code is more portable and can be consumed by other projects
+        links:
+          - title: tsc compiles typescript defined by a tsconfig.json
+            url: https://www.typescriptlang.org/docs/handbook/compiler-options.html
+        main:
+          commands:
+            - title: Delete dist folder
+              run: rm -rf dist
+            - title: Compile with typescript
+              run: tsc --outDir dist
+  deps:
+    title: Library dependencies
+    description: Npm dependencies
+    tasks:
+      upgrade:
+        title: Upgrade to latest dependencies
+        description: Upgrade to latest npm dependencies
+        motivation: Keep up with security and improvements
+        main:
+          commands:
+            - title: Upgrade to latest dependencies
+              run: yarn upgrade --latest
+            - title: Display advice about yarn upgrade-interactive
+              run: echo "❐ You could also use yarn upgrade-interactive --latest"
+  doc:
+    title: Generate the documentation
+    description: Generate the documentation automatically
+    tasks:
+      ts:
+        title: Generate documentation
+        description: Generate the markdown documentation for the typescript project
+        motivation: Good documentation is essential for developer experience
+        links:
+          - title: TypeDoc converts comments in Typescript into a JSON model
+            url: https://typedoc.org/
+          - title: baldrick-doc-ts produces markdown documentation
+            url: https://github.com/flarebyte/baldrick-doc-ts
+          - title: baldrick-doc-ts produces markdown documentation
+            url: https://github.com/flarebyte/baldrick-doc-ts
+          - title: Package development of Typescript library in ESM format
+            url: https://github.com/flarebyte/baldrick-dev-ts
+        main:
+          commands:
+            - name: report-folder
+              title: Ensure that we have a report folder
+              run: mkdir -p report
+            - name: typedoc
+              title: Generate typedoc doc.json
+              run: npx typedoc@latest --json report/doc.json --pretty src/index.ts
+            - name: api
+              title: Generate markdown files for the Api
+              run: npx baldrick-doc-ts@latest typedoc --json-source report/doc.json
+            - name: ngram
+              title: Generate some markdown files with ngram
+              run: npx baldrick-doc-ts@latest parse -f internal ngram
+            - name: fix
+              title: Fix all the markdown files
+              run: npx baldrick-dev-ts@latest markdown fix
+            - name: github
+              title: Fixes markdown in github folder
+              run: npx baldrick-dev-ts@latest markdown fix -s .github/
+  github:
+    title: Management of the github project
+    description: Generate the documentation based on the source code
+    tasks:
+      standard:
+        title: Standardize the github repository
+        description: Enable useful features for the github project repository
+        motivation: Create consistent settings
+        main:
+          commands:
+            - name: edit
+              title: Configure usual settings for github project
+              run: gh repo edit --delete-branch-on-merge --enable-squash-merge
+  lint:
+    title: Static code analysis
+    description: Find problems in the code base
+    tasks:
+      check:
+        title: Static code analysis of Typescript code
+        description: Find problems in Typescript code
+        motivation: Make the code more consistent and avoid bugs
+        main:
+          commands:
+            - name: check
+              title: Lint check sources
+              run: npx baldrick-dev-ts@latest lint check -s src test
+      fix:
+        title: Fix static code analysis
+        description: Fix problems in Typescript code
+        motivation: Facilitate routine maintenance of code
+        main:
+          commands:
+            - name: fix
+              title: Fix source code
+              run: npx baldrick-dev-ts@latest lint fix -s src test
+  md:
+    title: Markdown documentation
+    description: Manage markdown documentation
+    tasks:
+      check:
+        title: Check Markdown files
+        description: Checks that the markdown documents follows some consistent guidelines
+        motivation: Make the markdown documents consistent in style
+        main:
+          commands:
+            - name: check
+              title: Check markdown files
+              run: baldrick markdown check
+            - name: github
+              title: Check markdown files in github
+              run: npx baldrick-dev-ts@latest markdown check -s .github/
+      fix:
+        title: Fix Markdown files
+        description:
+          Modify the markdown documents to ensure they follow some consistent
+          guidelines
+        motivation: Make the markdown documents consistent in style
+        main:
+          commands:
+            - title: Fix markdown files
+              run: npx baldrick-dev-ts@latest markdown fix
+            - title: Fix markdown files in github
+              run: npx baldrick-dev-ts@latest markdown fix -s .github/
+  release:
+    title: Release of the library
+    tasks:
+      ready:
+        title: Ready for publishing
+        description:
+          Run a sequence of commands to check that the library is ready to be
+          published
+        motivation: Detect quality flaws before pushing the code
+        main:
+          commands:
+            - name: release-check
+              title: Checks that the version has been incremented
+              run: npx baldrick-dev-ts@latest release check
+            - name: lint
+              title: Check linting
+              run: npx baldrick-dev-ts@latest lint check -s src test
+            - name: markdown
+              title: Check markdown files
+              run: npx baldrick-dev-ts@latest markdown check
+            - name: markdown-github
+              title: Check markdown files in github
+              run: npx baldrick-dev-ts@latest markdown check -s .github/
+            - name: outdated
+              title: Check whether some libraries are outdated
+              run: yarn outdated
+            - name: outdated
+              title: Audit some libraries
+              run: yarn audit
+  scaffold:
+    title: Scaffolding for the project
+    tasks:
+      upgrade:
+        title: Upgrade baldrick-broth configuration to latest version
+        description: Gets the latest version of this configuration file
+        motivation: Always apply the latest project conventions
+        main:
+          commands:
+            - title: Remove previous temporary directory
+              run: rm -rf temp/broth
+            - title: Create temporary directory
+              run: mkdir -p temp/broth
+            - a: mask-object
+              name: broth-model
+              title: Extract model from this baldrick-broth.yaml
+              value: build
+              mask: model
+            - title: Save baldrick-broth file with existing model
+              stdin: data.scaffold::upgrade::broth-model
+              run: sponge temp/broth/baldrick-broth-model.json
+              links:
+                - title: sponge from MoreUtils homepage
+                  url: https://formulae.brew.sh/formula/moreutils
+            - title: merge model with new workflow
+              run: npx baldrick-whisker@latest object baldrick-broth.yaml
+                temp/broth/baldrick-broth-model.json
+                github:flarebyte:baldrick-reserve:data/ts/baldrick-broth.yaml
+      norm:
+        title: Normalize the project
+        description: Normalize the project in a similar fashion that the other
+          typescript projects
+        motivation: Make the project structure consistent and easier to navigate
+        main:
+          commands:
+            - title: Create all github repositories
+              run: mkdir -p .github/workflows .github/ISSUE_TEMPLATE
+            - title: Github - create bug report form
+              run:
+                npx baldrick-whisker@latest object .github/ISSUE_TEMPLATE/bug_report.yaml
+                github:flarebyte:baldrick-reserve:data/ts/bug-report.yaml
+            - title: Github - create feature request form
+              run: npx baldrick-whisker@latest object
+                .github/ISSUE_TEMPLATE/feature_request.yaml
+                github:flarebyte:baldrick-reserve:data/ts/feature-request.yaml
+            - title: Github - create main workflow
+              run: npx baldrick-whisker@latest object .github/workflows/main.yml
+                github:flarebyte:baldrick-reserve:data/ts/workflow-main.yml
+            - title: Github - create pull request configuration
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/pull-request-template.hbs
+                .github/pull_request_template.md
+            - title: Create all needed repositories
+              run: mkdir -p .vscode src test spec script script/data script/schema
+            - title: Install default vscode snippets
+              run: npx baldrick-whisker@latest object --no-ext
+                .vscode/baldrick.code-snippets.json
+                github:flarebyte:baldrick-reserve:data/ts/snippet.yaml
+            - title: Create .gitignore
+              links:
+                - title: Specify files to ignore in source control
+                  url: https://git-scm.com/docs/gitignore
+              run:
+                npx baldrick-whisker@latest render --no-ext baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/gitignore.hbs
+                .gitignore.sh
+            - title: Create .editorconfig
+              run:
+                npx baldrick-whisker@latest render --no-ext baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/editorconfig.hbs
+                .editorconfig.sh
+              links:
+                - title: Maintain consistent coding styles for spaces
+                  url: https://editorconfig.org/
+            - title: Create a starter .vscode/settings.json
+              run: npx baldrick-whisker@latest object .vscode/settings.json
+                github:flarebyte:baldrick-reserve:data/ts/vscode-settings.json
+                --no-overwrite
+            - title: Create tsconfig.json
+              run: npx baldrick-whisker@latest object tsconfig.json
+                github:flarebyte:baldrick-reserve:data/ts/tsconfig-2021.yaml
+            - title: Create .prettierrc.json
+              run: npx baldrick-whisker@latest object .prettierrc.json
+                github:flarebyte:baldrick-reserve:data/ts/prettierrc.json
+            - title: Create .remarkrc.yml
+              run: npx baldrick-whisker@latest object .remarkrc.yml
+                github:flarebyte:baldrick-reserve:data/ts/remarkrc.yml
+            - title: Create CONTRIBUTING.md with contribution guidelines
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/contributing.hbs
+                CONTRIBUTING.md
+            - title: Create CODE_OF_CONDUCT.md with code of conduct guidelines
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/code-of-conduct.hbs
+                CODE_OF_CONDUCT.md
+            - title: Create GLOSSARY.md with project vocabulary
+              run: npx baldrick-whisker@latest render
+                github:flarebyte:baldrick-reserve:data/glossary.yaml
+                github:flarebyte:baldrick-reserve:template/glossary.hbs
+                GLOSSARY.md
+            - title: Create a starter DECISIONS.md
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/decisions.hbs
+                DECISIONS.md --no-overwrite
+            - title: Create README.md
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/readme.hbs
+                README.md
+            - title: Create TECHNICAL_DESIGN.md
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/technical-design.hbs
+                TECHNICAL_DESIGN.md
+            - title: Create LICENSE
+              run:
+                npx baldrick-whisker@latest render --no-ext baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/license.hbs
+                LICENSE.md
+            - title: Fix markdown
+              run: npx baldrick-broth@latest md fix
+            - name: package-json
+              title: Backup dependencies
+              run: cat package.json
+              onSuccess:
+                - save
+                - silent
+                - json
+            - a: mask-object
+              title: Extracts dependencies from package.json
+              name: package-json-deps
+              value: data.scaffold::norm::package-json
+              mask: dependencies,devDependencies,peerDependencies
+            - name: save-package-json-deps
+              title: Save package.json with only dependencies
+              stdin: data.scaffold::norm::package-json-deps
+              run: sponge temp/broth/package-deps.json
+            - title: Create package.json metadata from broth model
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/package.hbs
+                temp/broth/package-specific.json
+            - title: merge dependencies with broth model info
+              run: npx baldrick-whisker@latest object package.json
+                temp/broth/package-specific.json temp/broth/package-deps.json
+      norm-package:
+        title: Normalize the project
+        description: Normalize the project in a similar fashion that the other
+          typescript projects
+        motivation: Make the project structure consistent and easier to navigate
+        main:
+          commands:
+            - name: package-json
+              title: Backup dependencies
+              run: cat package.json
+              onSuccess:
+                - save
+                - silent
+                - json
+            - a: mask-object
+              title: Extracts dependencies from package.json
+              name: package-json-deps
+              value: data.scaffold::norm-package::package-json
+              mask: dependencies,devDependencies,peerDependencies
+            - name: save-package-json-deps
+              title: Save package.json with only dependencies
+              stdin: data.scaffold::norm-package::package-json-deps
+              run: sponge temp/broth/package-deps.json
+            - title: Create package.json metadata from broth model
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/package.hbs
+                temp/broth/package-specific.json
+            - title: merge dependencies with broth model info
+              run: npx baldrick-whisker@latest object package.json
+                temp/broth/package-specific.json temp/broth/package-deps.json

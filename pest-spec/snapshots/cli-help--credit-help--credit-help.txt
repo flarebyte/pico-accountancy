@@ -1,0 +1,12 @@
+Usage: pico-accountancy credit [options] <source> <destination>
+
+Group a QIF bank statement by credit
+
+Arguments:
+  source                        The source QIF bank statement
+  destination                   The destination file
+
+Options:
+  -r, --rules-path <rulespath>  The path to the rule configuration (default:
+                                "pico-accountancy.json")
+  -h, --help                    display help for command

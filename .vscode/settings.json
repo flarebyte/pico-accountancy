@@ -1,0 +1,14 @@
+{
+  "makefile.extensionOutputFolder": "./.vscode",
+  "yaml.schemas": {
+    "./script/schema/project.schema.json": "script/data/project.yaml",
+    "https://raw.githubusercontent.com/flarebyte/baldrick-pest/main/spec/snapshots/pest-model/get-schema--schema.json": "*.pest.yaml",
+    "https://raw.githubusercontent.com/flarebyte/baldrick-broth/main/spec/snapshots/build-model/get-schema--schema.json": "baldrick-broth.yaml"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": ["./pest-spec/fixture/pico-accountancy.json"],
+      "url": "./spec/snapshots/accountancy-model/get-schema--schema.json"
+    }
+  ]
+}
