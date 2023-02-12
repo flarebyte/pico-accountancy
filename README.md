@@ -6,11 +6,13 @@
 
 > Accountancy script for very simple cases
 
-CLI tool for managing very simple accountancy
+CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
 
 Highlights:
 
 * Written in `Typescript`
+* Understand QIF format
+* Automatically convert rows based on search terms
 
 
 ## Documentation and links
