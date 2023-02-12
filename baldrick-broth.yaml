@@ -1,7 +1,7 @@
 model:
   project:
     title: Accountancy script for very simple cases
-    description: CLI tool for managing very simple accountancy
+    description: CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
     version: 0.2.0
     keywords:
       - CLI
@@ -9,6 +9,8 @@ model:
   readme:
     highlights:
       - Written in `Typescript`
+      - Understand QIF format
+      - Automatically convert rows based on search terms
     links:
       - "[Usage](USAGE.md)"
     related:
