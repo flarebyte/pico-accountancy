@@ -39,8 +39,8 @@ interface AmountRow {
 }
 interface DescriptionRow {
   description: string;
-  about: string | null;
-  category: Category | null;
+  about?: string;
+  category?: Category;
 }
 
 interface Row {
@@ -52,8 +52,8 @@ interface Row {
   debit: string;
   credit: string;
   description: string;
-  about: string | null;
-  category: Category | null;
+  about?: string;
+  category?: Category;
 }
 
 interface CombinedRow {
@@ -64,14 +64,14 @@ interface CombinedRow {
   debit: string;
   credit: string;
   description: string;
-  about: string | null;
-  category: Category | null;
+  about?: string;
+  category?: Category;
 }
 
 interface TempCompositeRow {
-  dateRow: DateRow | null;
-  amountRow: AmountRow | null;
-  descriptionRow: DescriptionRow | null;
+  dateRow?: DateRow;
+  amountRow?: AmountRow;
+  descriptionRow?: DescriptionRow;
 }
 interface Counters {
   commons: number[];
@@ -81,7 +81,7 @@ interface Counters {
 }
 
 const isCategoryEqual = (
-  actual: Category | null | undefined,
+  actual: Category | undefined,
   expected: Category
 ): boolean => (actual ? actual.name === expected.name : false);
 
@@ -150,9 +150,9 @@ const sumAmount = (rows: Row[]): number =>
 
 const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
   if (
-    value.amountRow === null ||
-    value.dateRow === null ||
-    value.descriptionRow === null
+    value.amountRow === undefined ||
+    value.dateRow === undefined ||
+    value.descriptionRow === undefined
   ) {
     throw new Error('Corrupted data');
   }
@@ -210,19 +210,15 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     const more = applyRulesToDescription(description);
     return {
       description,
-      category: more ? more.category : null,
-      about: more ? more.about : null,
+      category: more ? more.category : undefined,
+      about: more ? more.about : undefined,
     };
   }
 
   function qifToRows(qif: string): CombinedRow[] {
     const lines = qif.split('\n');
     const results: CombinedRow[] = [];
-    let row: TempCompositeRow = {
-      dateRow: null,
-      amountRow: null,
-      descriptionRow: null,
-    };
+    let row: TempCompositeRow = {};
 
     for (const line of lines) {
       const firstChar = line.charAt(0);
@@ -231,7 +227,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
           if (row.dateRow) {
             results.push(joinTempCompositeRow(row));
           }
-          row = { dateRow: null, amountRow: null, descriptionRow: null };
+          row = {};
           break;
         case 'D':
           row.dateRow = parseDateRow(line);

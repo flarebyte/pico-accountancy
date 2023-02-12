@@ -55,6 +55,6 @@ export const safeParseBuild = (
   return fail(errors);
 };
 
-export const getSchema = (_name: 'default') => {
+export const getSchema = () => {
   return schema;
 };
