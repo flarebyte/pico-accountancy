@@ -10,7 +10,7 @@ model:
     highlights:
       - Written in `Typescript`
     links:
-      - '[Usage](USAGE.md)'
+      - "[Usage](USAGE.md)"
     related:
       - "[baldrick-zest-engine](https://github.com/flarebyte/baldrick-zest-engi\
         ne) Run tests declaratively with a few cunning plans"
@@ -134,32 +134,32 @@ workflows:
         title: Generate documentation
         description: Generate the markdown documentation for the typescript project
         motivation: Good documentation is essential for developer experience
+        links:
+          - title: TypeDoc converts comments in Typescript into a JSON model
+            url: https://typedoc.org/
+          - title: baldrick-doc-ts produces markdown documentation
+            url: https://github.com/flarebyte/baldrick-doc-ts
+          - title: baldrick-doc-ts produces markdown documentation
+            url: https://github.com/flarebyte/baldrick-doc-ts
+          - title: Package development of Typescript library in ESM format
+            url: https://github.com/flarebyte/baldrick-dev-ts
         main:
           commands:
             - name: report-folder
               title: Ensure that we have a report folder
-              run: mdir -p report
+              run: mkdir -p report
             - name: typedoc
               title: Generate typedoc doc.json
               run: npx typedoc@latest --json report/doc.json --pretty src/index.ts
-              links:
-                - title: TypeDoc converts comments in Typescript into a JSON model
-                  url: https://typedoc.org/
             - name: api
               title: Generate markdown files for the Api
               run: npx baldrick-doc-ts@latest typedoc --json-source report/doc.json
-              links:
-                - title: baldrick-doc-ts produces markdown documentation
-                  url: https://github.com/flarebyte/baldrick-doc-ts
             - name: ngram
               title: Generate some markdown files with ngram
               run: npx baldrick-doc-ts@latest parse -f internal ngram
             - name: fix
               title: Fix all the markdown files
               run: npx baldrick-dev-ts@latest markdown fix
-              links:
-                - title: Package development of Typescript library in ESM format
-                  url: https://github.com/flarebyte/baldrick-dev-ts
             - name: github
               title: Fixes markdown in github folder
               run: npx baldrick-dev-ts@latest markdown fix -s .github/
