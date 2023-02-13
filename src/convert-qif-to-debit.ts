@@ -18,5 +18,8 @@ export const commandQifToDebit = async (
   );
   const accountancy = picoAccountancy(ruleModel);
 
-  await writeText(destination, accountancy.qifToExpenseSummaryCsv(qifContent));
+  await writeText(
+    destination,
+    accountancy.qifToExpenseSummaryCsv(qifContent) + '\n'
+  );
 };
