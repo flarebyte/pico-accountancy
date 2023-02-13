@@ -2,7 +2,7 @@ model:
   project:
     title: Accountancy script for very simple cases
     description: CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
-    version: 0.2.0
+    version: 0.3.0
     keywords:
       - CLI
       - Accountancy

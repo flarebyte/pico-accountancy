@@ -45,12 +45,14 @@ const asCsvValue = (value: string | number): string => {
 export const toCSV = (values: (string | number)[]): string =>
   values.map(asCsvValue).join(',');
 
-export const slugify =
-  (splitter: (textToSplit: string) => string[]) => (text: string) =>
-    text === ''
-      ? ''
-      : splitter(text)
-          .map((t) => t.toLowerCase())
-          .join('-');
-const splitBySpace = (text: string): string[] => text.split(' ');
-export const dasherize = (text: string) => slugify(splitBySpace)(text);
+/**
+ * From: https://github.com/jprichardson/string.js
+ * This function also add a dash for uppercase letter
+ */
+export const dasherize = (text: string) =>
+  text
+    .trim()
+    .replace(/[_\s]+/g, '-')
+    .replace(/([A-Z])/g, '-$1')
+    .replace(/-+/g, '-')
+    .toLowerCase();
