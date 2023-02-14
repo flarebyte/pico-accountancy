@@ -330,6 +330,25 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     return csv;
   }
 
+  function qifToTodoCsv(qif: string): string {
+    const defaultHeaders: string[] = [
+      'Date',
+      'Description',
+      'Credit',
+      'Debit',
+      'Id',
+      'Type',
+      'Category',
+    ];
+    const header = [toCSV(defaultHeaders)];
+    const todoRows = qifToRowsWithIds(qif)
+      .filter((row) => row.category === undefined)
+      .map((row) => asBankRowCsv(row, []));
+    const headerAndRows = [...header, ...todoRows];
+    const csv = headerAndRows.join('\n');
+    return csv;
+  }
+
   const qifToExpenseGroupCsv = (qif: string): string => {
     const expenseCategories = conf.categories.filter(
       (value) => value.category === 'DEBIT'
@@ -383,6 +402,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   return {
     qifToBankCsv,
+    qifToTodoCsv,
     qifToExpenseGroupCsv,
     qifToExpenseSummaryCsv,
     qifToCreditSummaryCsv,

@@ -3,6 +3,7 @@ import { commandQifToBank } from './convert-qif-to-bank.js';
 import { commandQifToCredit } from './convert-qif-to-credit.js';
 import { commandQifToDebit } from './convert-qif-to-debit.js';
 import { commandQifToExpenses } from './convert-qif-to-expenses.js';
+import { commandQifToTodo } from './convert-qif-to-todo.js';
 import { commandQifToTotal } from './convert-qif-to-total.js';
 import { version } from './version.js';
 
@@ -47,6 +48,18 @@ program
     commaSeparatedList
   )
   .action(commandQifToBank);
+
+program
+  .command('todo')
+  .description('Identify missing rules for a QIF bank statement')
+  .argument(progInfo.source.name, progInfo.source.description)
+  .argument(progInfo.destination.name, progInfo.destination.description)
+  .option(
+    progInfo.rulespath.name,
+    progInfo.rulespath.description,
+    'pico-accountancy.json'
+  )
+  .action(commandQifToTodo);
 
 program
   .command('credit')

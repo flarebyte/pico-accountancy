@@ -47,6 +47,15 @@ cases:
         run: cat temp/total.txt
         expect:
           snapshot: total.txt
-        
+ todo:
+    title: Identify records that cannot be categorized
+    steps:
+      - title: run todo
+        run: yarn cli todo pest-spec/fixture/sample-with-todo.qif temp/todo.csv --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save todo snapshot
+        run: cat temp/todo.csv
+        expect:
+          snapshot: todo.csv
+      
 
        
