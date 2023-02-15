@@ -8,6 +8,7 @@ import {
   normalizeTransfer,
   to2Decimals,
   sum,
+  countStartsWith,
 } from './utility.js';
 
 const idprefs: string[] = [
@@ -356,6 +357,30 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     return csv;
   }
 
+  function verifyQif(qif: string): string {
+    const parsed = qifToRowsWithIds(qif).length;
+    const lines = qif.split('\n');
+    const date = countStartsWith('D', lines);
+    const amount = countStartsWith('T', lines);
+    const description = countStartsWith('P', lines);
+    const caret = countStartsWith('^', lines);
+    const start = countStartsWith('!Type:Oth', lines);
+    const detailedPresent = date === amount && date === description;
+    const isDetailedOk = detailedPresent ? '✓ There is' : '❌ There is not';
+    const isParsedOk = date === parsed ? '✓ There is' : '❌ There is no';
+    const result = `
+    We are able to extract and parse ${parsed} rows.
+    This represents:
+      ‣ ${amount} transactions
+      ‣ ${description} descriptions.
+      ‣ ${date} different dates.
+      ‣ The file starts with ${start} header, and includes ${caret} caret markers.
+      ${isDetailedOk} the same number of dates, descriptions and transactions.
+      ${isParsedOk} consistency between the number of rows parsed and the possible of QIF records.
+    `;
+    return result;
+  }
+
   const qifToExpenseGroupCsv = (qif: string): string => {
     const expenseCategories = conf.categories.filter(
       (value) => value.category === 'DEBIT'
@@ -410,6 +435,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
   return {
     qifToBankCsv,
     qifToTodoCsv,
+    verifyQif,
     qifToExpenseGroupCsv,
     qifToExpenseSummaryCsv,
     qifToCreditSummaryCsv,

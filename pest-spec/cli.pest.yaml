@@ -2,7 +2,7 @@
 title: pico-accountancy CLI
 description: Acceptance testing of pico-accountancy CLI application
 cases:
- bank:
+  bank:
     title: Convert to a bank statement
     steps:
       - title: run bank
@@ -11,7 +11,7 @@ cases:
         run: cat temp/bank.csv
         expect:
           snapshot: bank.csv
- credit:
+  credit:
     title: Extract the credit lines
     steps:
       - title: run credit
@@ -20,7 +20,7 @@ cases:
         run: cat temp/credit.csv
         expect:
           snapshot: credit.csv
- debit:
+  debit:
     title: Extract the debit lines
     steps:
       - title: run debit
@@ -29,7 +29,7 @@ cases:
         run: cat temp/debit.csv
         expect:
           snapshot: debit.csv
- expenses:
+  expenses:
     title: Extract the expenses lines
     steps:
       - title: run expenses
@@ -38,7 +38,7 @@ cases:
         run: cat temp/expenses.csv
         expect:
           snapshot: expenses.csv
- total:
+  total:
     title: Extract the total summary
     steps:
       - title: run total
@@ -47,7 +47,7 @@ cases:
         run: cat temp/total.txt
         expect:
           snapshot: total.txt
- todo:
+  todo:
     title: Identify records that cannot be categorized
     steps:
       - title: run todo
@@ -56,6 +56,21 @@ cases:
         run: cat temp/todo.csv
         expect:
           snapshot: todo.csv
-      
-
-       
+  check:
+    title: Identify records that cannot be categorized
+    steps:
+      - title: run check
+        run: yarn cli check pest-spec/fixture/sample.qif temp/check.text --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save check valid snapshot
+        run: cat temp/check.txt
+        expect:
+          snapshot: check.txt
+  check-corrupted:
+    title: Identify records that cannot be categorized
+    steps:
+      - title: run check
+        run: yarn cli check pest-spec/fixture/sample-corrupted.qif temp/check-corrupted.txt --rules-path  pest-spec/fixture/pico-accountancy.json
+      - title: save check corrupted qif
+        run: cat temp/check-corrupted.txt
+        expect:
+          snapshot: check-corrupted.txt

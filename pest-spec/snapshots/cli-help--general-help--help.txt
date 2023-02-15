@@ -9,6 +9,7 @@ Options:
 Commands:
   bank [options] <source> <destination>      Convert a QIF bank statement to CSV
   todo [options] <source> <destination>      Identify missing rules for a QIF bank statement
+  check [options] <source> <destination>     Check for obvious corruption of the QIF file
   credit [options] <source> <destination>    Group a QIF bank statement by credit
   debit [options] <source> <destination>     Group a QIF bank statement by debit
   expenses [options] <source> <destination>  Organise all the expenses from a QIF bank statement

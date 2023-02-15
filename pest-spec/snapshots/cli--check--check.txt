@@ -1,0 +1,10 @@
+
+    We are able to extract and parse 7 rows.
+    This represents:
+      ‣ 7 transactions
+      ‣ 7 descriptions.
+      ‣ 7 different dates.
+      ‣ The file starts with 1 header, and includes 7 caret markers.
+      ✓ There is the same number of dates, descriptions and transactions.
+      ✓ There is consistency between the number of rows parsed and the possible of QIF records.
+    

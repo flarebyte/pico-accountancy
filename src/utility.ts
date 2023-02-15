@@ -56,3 +56,9 @@ export const dasherize = (text: string) =>
     .replace(/([A-Z])/g, '-$1')
     .replace(/-+/g, '-')
     .toLowerCase();
+
+const hasStartsWith = (prefix: string) => (line: string) =>
+  line.startsWith(prefix);
+
+export const countStartsWith = (prefix: string, lines: string[]): number =>
+  lines.filter(hasStartsWith(prefix)).length;

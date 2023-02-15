@@ -5,6 +5,7 @@ import { commandQifToDebit } from './convert-qif-to-debit.js';
 import { commandQifToExpenses } from './convert-qif-to-expenses.js';
 import { commandQifToTodo } from './convert-qif-to-todo.js';
 import { commandQifToTotal } from './convert-qif-to-total.js';
+import { commandVerifyQif } from './verify-qif.js';
 import { version } from './version.js';
 
 const program = new Command();
@@ -60,6 +61,18 @@ program
     'pico-accountancy.json'
   )
   .action(commandQifToTodo);
+
+program
+  .command('check')
+  .description('Check for obvious corruption of the QIF file')
+  .argument(progInfo.source.name, progInfo.source.description)
+  .argument(progInfo.destination.name, progInfo.destination.description)
+  .option(
+    progInfo.rulespath.name,
+    progInfo.rulespath.description,
+    'pico-accountancy.json'
+  )
+  .action(commandVerifyQif);
 
 program
   .command('credit')
