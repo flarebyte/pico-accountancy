@@ -14,8 +14,5 @@ export const commandQifToTodo = async (
     opts
   );
   const accountancy = picoAccountancy(ruleModel);
-  await writeText(
-    destination,
-    accountancy.qifToTodoCsv(qifContent,[]) + '\n'
-  );
+  await writeText(destination, accountancy.qifToTodoCsv(qifContent) + '\n');
 };
