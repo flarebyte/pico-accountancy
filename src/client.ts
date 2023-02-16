@@ -122,13 +122,19 @@ program
   )
   .action(commandQifToTotal);
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
 export async function runClient() {
   try {
-    program.parseAsync();
+    await program.parseAsync();
+    program.exitOverride();
     console.log(`✓ Done. Version ${version}`);
   } catch (error) {
     console.log('pico-accountancy will exit with error code 1');
-    console.error(error);
+    const errorMessage = getErrorMessage(error);
+    console.error(errorMessage);
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit
   }
 }

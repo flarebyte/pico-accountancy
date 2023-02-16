@@ -1,0 +1,5 @@
+{"rulesPath":"pest-spec/fixture/pico-accountancy.json"}
+pico-accountancy will exit with error code 1
+This QIF row is corrupted {"amount":"OK","date":"OK","description":"missing"}: {"dateRow":{"date":"2015-03-29T23:00:00.000Z","yyyymmdd":"2015-03-30"},"amountRow":{"status":"CREDIT","amount":"0.02","debit":"","credit":"0.02"}}
+[2K[1G[31merror[39m Command failed with exit code 1.
+[2K[1G[34minfo[39m Visit [1mhttps://yarnpkg.com/en/docs/cli/run[22m for documentation about this command.

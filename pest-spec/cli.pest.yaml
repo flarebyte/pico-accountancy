@@ -78,12 +78,14 @@ cases:
     title: Check that a missing field will fail the processing
     steps:
       - title: run check
-        run: yarn cli check pest-spec/fixture/sample-missing-field.qif temp/will-be-ignored.txt --rules-path  pest-spec/fixture/pico-accountancy.json     
-      - title: run check
-        run: yarn cli check pest-spec/fixture/sample-missing-field.qif temp/will-be-ignored.txt --rules-path  pest-spec/fixture/pico-accountancy.json     
+        run: yarn cli check pest-spec/fixture/sample-missing-field.qif temp/will-be-ignored.txt --rules-path  pest-spec/fixture/pico-accountancy.json
+        expect:
+          exitCode:  exit 1 .. n
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
         stdin:
           step: 0
-          exitCode: exit 1 .. n
           receiving: stdout + stderr
         expect:
           snapshot: check-missing-field.txt
+ 
