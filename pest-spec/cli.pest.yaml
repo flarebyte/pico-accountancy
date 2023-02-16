@@ -57,7 +57,7 @@ cases:
         expect:
           snapshot: todo.csv
   check:
-    title: Identify records that cannot be categorized
+    title: Check that no record has been corrupted
     steps:
       - title: run check
         run: yarn cli check pest-spec/fixture/sample.qif temp/check.text --rules-path  pest-spec/fixture/pico-accountancy.json
@@ -66,7 +66,7 @@ cases:
         expect:
           snapshot: check.txt
   check-corrupted:
-    title: Identify records that cannot be categorized
+    title: Check that a missing caret will raise an alarm
     steps:
       - title: run check
         run: yarn cli check pest-spec/fixture/sample-corrupted.qif temp/check-corrupted.txt --rules-path  pest-spec/fixture/pico-accountancy.json
@@ -74,3 +74,16 @@ cases:
         run: cat temp/check-corrupted.txt
         expect:
           snapshot: check-corrupted.txt
+  check-missing-field:
+    title: Check that a missing field will fail the processing
+    steps:
+      - title: run check
+        run: yarn cli check pest-spec/fixture/sample-missing-field.qif temp/will-be-ignored.txt --rules-path  pest-spec/fixture/pico-accountancy.json     
+      - title: run check
+        run: yarn cli check pest-spec/fixture/sample-missing-field.qif temp/will-be-ignored.txt --rules-path  pest-spec/fixture/pico-accountancy.json     
+        stdin:
+          step: 0
+          exitCode: exit 1 .. n
+          receiving: stdout + stderr
+        expect:
+          snapshot: check-missing-field.txt
