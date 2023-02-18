@@ -1,0 +1,12 @@
+Usage: pico-accountancy check [options] <source> <destination>
+
+Check for obvious corruption of the QIF file
+
+Arguments:
+  source                        The source QIF bank statement
+  destination                   The destination file
+
+Options:
+  -r, --rules-path <rulespath>  The path to the rule configuration (default:
+                                "pico-accountancy.json")
+  -h, --help                    display help for command
