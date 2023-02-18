@@ -21,9 +21,9 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Installation
         run: yarn install
-      - name: Static code analysis
-        run: yarn lint:ci
-      - name: Test
-        run: yarn test:ci
+      - name: Run zest unit tests
+        run: npx baldrick-broth test spec
+      - name: Run pest integration tests
+        run: npx baldrick-broth test pest
       - name: Build
-        run: yarn build:ci
+        run: yarn build
