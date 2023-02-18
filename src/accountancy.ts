@@ -160,9 +160,12 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
       date: value.dateRow === undefined ? 'missing' : 'OK',
       description: value.descriptionRow === undefined ? 'missing' : 'OK',
     });
-    throw new Error(
-      `This QIF row is corrupted ${missingOrOk}: ${JSON.stringify(value)}`
-    );
+    const currentRow = JSON.stringify({
+      amount: value.amountRow,
+      description: value.descriptionRow,
+      date: value.dateRow?.yyyymmdd,
+    });
+    throw new Error(`This QIF row is corrupted ${missingOrOk}: ${currentRow}`);
   }
   return {
     date: value.dateRow.date,
