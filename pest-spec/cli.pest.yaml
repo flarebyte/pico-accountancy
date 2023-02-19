@@ -60,7 +60,7 @@ cases:
     title: Check that no record has been corrupted
     steps:
       - title: run check
-        run: yarn cli check pest-spec/fixture/sample.qif temp/check.text --rules-path  pest-spec/fixture/pico-accountancy.json
+        run: yarn cli check pest-spec/fixture/sample.qif temp/check.txt --rules-path  pest-spec/fixture/pico-accountancy.json
       - title: save check valid snapshot
         run: cat temp/check.txt
         expect:
