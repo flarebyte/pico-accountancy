@@ -8,6 +8,7 @@ import {
   normalizeTransfer,
   to2Decimals,
   sum,
+  countStartsWith,
 } from './utility.js';
 
 const idprefs: string[] = [
@@ -154,7 +155,17 @@ const joinTempCompositeRow = (value: TempCompositeRow): CombinedRow => {
     value.dateRow === undefined ||
     value.descriptionRow === undefined
   ) {
-    throw new Error('Corrupted data');
+    const missingOrOk = JSON.stringify({
+      amount: value.amountRow === undefined ? 'missing' : 'OK',
+      date: value.dateRow === undefined ? 'missing' : 'OK',
+      description: value.descriptionRow === undefined ? 'missing' : 'OK',
+    });
+    const currentRow = JSON.stringify({
+      amount: value.amountRow,
+      description: value.descriptionRow,
+      date: value.dateRow?.yyyymmdd,
+    });
+    throw new Error(`This QIF row is corrupted ${missingOrOk}: ${currentRow}`);
   }
   return {
     date: value.dateRow.date,
@@ -330,6 +341,49 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     return csv;
   }
 
+  function qifToTodoCsv(qif: string): string {
+    const defaultHeaders: string[] = [
+      'Date',
+      'Description',
+      'Credit',
+      'Debit',
+      'Id',
+      'Type',
+      'Category',
+    ];
+    const header = [toCSV(defaultHeaders)];
+    const todoRows = qifToRowsWithIds(qif)
+      .filter((row) => row.category === undefined)
+      .map((row) => asBankRowCsv(row, []));
+    const headerAndRows = [...header, ...todoRows];
+    const csv = headerAndRows.join('\n');
+    return csv;
+  }
+
+  function verifyQif(qif: string): string {
+    const parsed = qifToRowsWithIds(qif).length;
+    const lines = qif.split('\n');
+    const date = countStartsWith('D', lines);
+    const amount = countStartsWith('T', lines);
+    const description = countStartsWith('P', lines);
+    const caret = countStartsWith('^', lines);
+    const start = countStartsWith('!Type:Oth', lines);
+    const detailedPresent = date === amount && date === description;
+    const isDetailedOk = detailedPresent ? '✓ There is' : '❌ There is not';
+    const isParsedOk = date === parsed ? '✓ There is' : '❌ There is no';
+    const result = `
+    We are able to extract and parse ${parsed} rows.
+    This represents:
+      ‣ ${amount} transactions
+      ‣ ${description} descriptions.
+      ‣ ${date} different dates.
+      ‣ The file starts with ${start} header, and includes ${caret} caret markers.
+      ${isDetailedOk} the same number of dates, descriptions and transactions.
+      ${isParsedOk} consistency between the number of rows parsed and the possible of QIF records.
+    `;
+    return result;
+  }
+
   const qifToExpenseGroupCsv = (qif: string): string => {
     const expenseCategories = conf.categories.filter(
       (value) => value.category === 'DEBIT'
@@ -383,6 +437,8 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   return {
     qifToBankCsv,
+    qifToTodoCsv,
+    verifyQif,
     qifToExpenseGroupCsv,
     qifToExpenseSummaryCsv,
     qifToCreditSummaryCsv,

@@ -3,10 +3,7 @@ import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';
 import { CommandQifToTargetRunOpts } from './model.js';
 
-/**
- *  bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices'
- */
-export const commandQifToBank = async (
+export const commandVerifyQif = async (
   source: string,
   destination: string,
   opts: CommandQifToTargetRunOpts
@@ -17,8 +14,5 @@ export const commandQifToBank = async (
     opts
   );
   const accountancy = picoAccountancy(ruleModel);
-  await writeText(
-    destination,
-    accountancy.qifToBankCsv(qifContent, opts.columns || []) + '\n'
-  );
+  await writeText(destination, accountancy.verifyQif(qifContent) + '\n');
 };

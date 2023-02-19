@@ -3,7 +3,9 @@ import { commandQifToBank } from './convert-qif-to-bank.js';
 import { commandQifToCredit } from './convert-qif-to-credit.js';
 import { commandQifToDebit } from './convert-qif-to-debit.js';
 import { commandQifToExpenses } from './convert-qif-to-expenses.js';
+import { commandQifToTodo } from './convert-qif-to-todo.js';
 import { commandQifToTotal } from './convert-qif-to-total.js';
+import { commandVerifyQif } from './verify-qif.js';
 import { version } from './version.js';
 
 const program = new Command();
@@ -47,6 +49,30 @@ program
     commaSeparatedList
   )
   .action(commandQifToBank);
+
+program
+  .command('todo')
+  .description('Identify missing rules for a QIF bank statement')
+  .argument(progInfo.source.name, progInfo.source.description)
+  .argument(progInfo.destination.name, progInfo.destination.description)
+  .option(
+    progInfo.rulespath.name,
+    progInfo.rulespath.description,
+    'pico-accountancy.json'
+  )
+  .action(commandQifToTodo);
+
+program
+  .command('check')
+  .description('Check for obvious corruption of the QIF file')
+  .argument(progInfo.source.name, progInfo.source.description)
+  .argument(progInfo.destination.name, progInfo.destination.description)
+  .option(
+    progInfo.rulespath.name,
+    progInfo.rulespath.description,
+    'pico-accountancy.json'
+  )
+  .action(commandVerifyQif);
 
 program
   .command('credit')
@@ -96,13 +122,19 @@ program
   )
   .action(commandQifToTotal);
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
 export async function runClient() {
   try {
-    program.parseAsync();
+    await program.parseAsync();
+    program.exitOverride();
     console.log(`✓ Done. Version ${version}`);
   } catch (error) {
     console.log('pico-accountancy will exit with error code 1');
-    console.error(error);
+    const errorMessage = getErrorMessage(error);
+    console.error(errorMessage);
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit
   }
 }

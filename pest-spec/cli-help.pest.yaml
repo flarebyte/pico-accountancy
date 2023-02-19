@@ -74,3 +74,27 @@ cases:
           receiving: stdout + stderr
         expect:
           snapshot: total-help.txt
+  todo-help:
+    title: Display help for the todo command
+    steps:
+      - title: run help todo
+        run: yarn cli todo --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: todo-help.txt
+  todo-check:
+    title: Display help for the check command
+    steps:
+      - title: run help check
+        run: yarn cli check --help
+      - title: Remove changing info from output
+        run: sed -f pest-spec/scripts/cleaning.sed
+        stdin:
+          step: 0
+          receiving: stdout + stderr
+        expect:
+          snapshot: check-help.txt

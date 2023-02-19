@@ -1,7 +1,7 @@
 {
   "name": "pico-accountancy",
   "description": "Accountancy script for very simple cases",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Olivier Huin",
     "url": "https://github.com/olih"
@@ -52,7 +52,7 @@
     "zod": "^3.20.6"
   },
   "devDependencies": {
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.14.0",
     "baldrick-dev-ts": "^0.17.0",
     "baldrick-zest-engine": "^0.7.0",
     "baldrick-zest-mess": "^0.16.0",

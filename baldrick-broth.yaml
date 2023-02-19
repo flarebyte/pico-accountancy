@@ -2,7 +2,7 @@ model:
   project:
     title: Accountancy script for very simple cases
     description: CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
-    version: 0.2.0
+    version: 0.3.0
     keywords:
       - CLI
       - Accountancy
@@ -35,6 +35,9 @@ model:
       - railway
       - commander
   workflow-version: 0.1.0
+  pest-filenames:
+    - cli-help
+    - cli
 workflows:
   test:
     title: Test the library
@@ -68,6 +71,19 @@ workflows:
         links:
           - title: Testing with baldrick-pest
             url: https://github.com/flarebyte/baldrick-pest
+        main:
+          each:
+            - name: pest-filename
+              values: build.model.pest-filenames
+          commands:
+            - title: Run regression on file
+              name: Run regression on {{pest-filename}}.pest.yaml
+              run: npx baldrick-pest@latest test --spec-file pest-spec/{{pest-filename}}.pest.yaml
+      scc:
+        title: Count lines of code
+        description: Count lines of code
+        motivation: Count lines of code
+        links:
           - title: Counting lines of code in many programming languages
             url: https://github.com/boyter/scc
         before:
@@ -84,9 +100,9 @@ workflows:
             - name: pest-file
               values: data.test::pest::pest-files
           commands:
-            - title: Run regression on file
-              name: Run regression on {{pest-file.Location}}
-              run: npx baldrick-pest@latest test --spec-file {{pest-file.Location}}
+            - title: Display info
+              name: Display info {{pest-file.Location}}
+              run: echo {{pest-file.Location}}
       cli:
         title: Run client directly
         description: Run the client with ts-node during development

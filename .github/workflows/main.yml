@@ -14,16 +14,23 @@ jobs:
           - macOS-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       - name: Installation
         run: yarn install
-      - name: Static code analysis
-        run: yarn lint:ci
-      - name: Test
-        run: yarn test:ci
+      - name: Run zest unit tests
+        run: npx baldrick-broth test spec
+      - name: Run pest integration tests
+        run: npx baldrick-broth test pest
       - name: Build
-        run: yarn build:ci
+        run: yarn build
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Pest 
+          path: report/*.pest.mocha.json
+          reporter: mocha-json
