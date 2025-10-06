@@ -18,32 +18,45 @@
   },
   "bugs": "https://github.com/flarebyte/pico-accountancy/issues",
   "bin": {
-    "pico-accountancy": "dist/src/cli.mjs"
+    "pico-accountancy": "dist/cli.mjs"
   },
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/src/cli.mjs",
-      "default": "./dist/src/cli.mjs",
-      "types": "./dist/src"
+      "import": "./dist/cli.mjs",
+      "default": "./dist/cli.mjs",
+      "types": "./src"
     },
     "./package.json": {
       "default": "./package.json"
     }
   },
-  "main": "./dist/src/index.mjs",
+  "main": "./dist/index.js",
   "files": [
-    "dist/src",
+    "dist",
     "src"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc --outDir dist",
-    "test": "node --test --loader ts-node/esm test/*.test.ts",
-    "cli": "node --loader ts-node/esm src/cli.mts",
-    "spec": "node --loader ts-node/esm .baldrick-zest.ts"
+    "test": "tsx --test test/*.test.ts",
+    "cli": "tsx src/cli.mts",
+    "test:cov": "c8 --reporter=text-summary --reporter=lcov yarn -s test"
+  },
+  "c8": {
+    "all": true,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "dist/**",
+      "test/**",
+      "pest-spec/**",
+      "spec/**",
+      "**/*.d.ts"
+    ]
   },
   "dependencies": {
     "commander": "^10.0.0",
