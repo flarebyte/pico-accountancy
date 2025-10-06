@@ -157,3 +157,11 @@ Tip: Browse all “baldrick-\*” packages
     folder conventions) in `AGENTS_PROJECT.md` (agent-friendly companion).
 -   If a project needs additional contributor-facing notes, consider a
     short `PROJECT_NOTES.md` that links to `AGENTS.md` and `INTERNAL.md`.
+
+## Branching Policy (for Agents)
+
+-   Do not create new Git branches unless the user explicitly asks you to.
+-   Default to working on the currently checked-out branch.
+-   When a PR is requested, confirm the target branch name with the user, or
+    use the one provided by the user.
+-   Keep changes small and focused; avoid parallel branches for routine work.
