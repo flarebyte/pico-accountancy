@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - Provide a tiny Result type and helpers (succeed/fail).
+ * - Functional combinators to compose success/failure flows.
+ */
 interface Success<a> {
   status: 'success';
   value: a;

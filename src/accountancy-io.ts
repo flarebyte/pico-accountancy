@@ -1,5 +1,10 @@
+/**
+ * Responsibilities:
+ * - File I/O helpers to read/write JSON and text files.
+ * - Return structured Result types with contextual error messages.
+ */
 import fs from 'node:fs/promises';
-import { Result, fail } from './railway.js';
+import { fail, type Result } from './railway.js';
 export type LoadingStatus = Result<
   object,
   { message: string; filename: string }
@@ -16,7 +21,7 @@ export type StringSavingStatus = Result<
 >;
 
 export const readJson = async (filename: string): Promise<LoadingStatus> => {
-  let content;
+  let content: string;
   try {
     content = await fs.readFile(filename, { encoding: 'utf8' });
   } catch {
@@ -41,7 +46,7 @@ export const readJson = async (filename: string): Promise<LoadingStatus> => {
 };
 
 export const readText = async (
-  filename: string
+  filename: string,
 ): Promise<StringLoadingStatus> => {
   try {
     const value = await fs.readFile(filename, { encoding: 'utf8' });
@@ -59,7 +64,7 @@ export const readText = async (
 
 export const writeText = async (
   filename: string,
-  content: string
+  content: string,
 ): Promise<StringSavingStatus> => {
   try {
     await fs.writeFile(filename, content, { encoding: 'utf8' });

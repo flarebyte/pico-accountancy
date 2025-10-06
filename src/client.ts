@@ -1,3 +1,9 @@
+/**
+ * Responsibilities:
+ * - Define the CLI surface (commands, options) using Commander.
+ * - Wire subcommands to conversion/verification handlers.
+ * - Handle execution, version reporting, and error-to-exit logic.
+ */
 import { Command } from 'commander';
 import { commandQifToBank } from './convert-qif-to-bank.js';
 import { commandQifToCredit } from './convert-qif-to-credit.js';
@@ -41,12 +47,12 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .option(
     '-c, --columns <target>',
     'Gives a list of columns separated by coma.',
-    commaSeparatedList
+    commaSeparatedList,
   )
   .action(commandQifToBank);
 
@@ -58,7 +64,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToTodo);
 
@@ -70,7 +76,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandVerifyQif);
 
@@ -82,7 +88,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToCredit);
 
@@ -94,7 +100,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToDebit);
 
@@ -106,7 +112,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToExpenses);
 
@@ -118,7 +124,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToTotal);
 

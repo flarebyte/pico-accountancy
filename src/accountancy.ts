@@ -1,14 +1,21 @@
-import { AccountancyModel, Category, Rule } from './accountancy-model.js';
+/**
+ * Responsibilities:
+ * - Core QIF processing engine: parse QIF lines into typed rows.
+ * - Normalize fields, apply categorization rules, and generate IDs.
+ * - Produce CSV outputs (bank, todo, debit/credit summaries and groups).
+ * - Compute totals and provide basic QIF integrity verification.
+ */
+import type { AccountancyModel, Category, Rule } from './accountancy-model.js';
 import {
-  normalizeDescription,
-  dasherize,
-  toCSV,
-  normalizeDate,
-  isDebitOrCredit,
-  normalizeTransfer,
-  to2Decimals,
-  sum,
   countStartsWith,
+  dasherize,
+  isDebitOrCredit,
+  normalizeDate,
+  normalizeDescription,
+  normalizeTransfer,
+  sum,
+  to2Decimals,
+  toCSV,
 } from './utility.js';
 
 const idprefs: string[] = [
@@ -83,14 +90,14 @@ interface Counters {
 
 const isCategoryEqual = (
   actual: Category | undefined,
-  expected: Category
+  expected: Category,
 ): boolean => (actual ? actual.name === expected.name : false);
 
 const filterDebitByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat)
+      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat),
     );
     if (filtered.length === 0) {
       return cat.name;
@@ -103,7 +110,7 @@ const filterCreditByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === CREDIT && isCategoryEqual(row.category, cat)
+      (row) => row.status === CREDIT && isCategoryEqual(row.category, cat),
     );
     if (filtered.length === 0) {
       return cat.name;
@@ -116,13 +123,13 @@ const filterGroupByCategory =
   (rows: Row[]) =>
   (cat: Category): string => {
     const filtered = rows.filter(
-      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat)
+      (row) => row.status === DEBIT && isCategoryEqual(row.category, cat),
     );
     if (filtered.length === 0) {
       return cat.name;
     }
     const simplifiedRows = filtered.map((row) =>
-      toCSV(['', "'" + row.id, row.debit])
+      toCSV(['', `'${row.id}`, row.debit]),
     );
     const simplifiedRowsWithHeader = [cat.name, ...simplifiedRows];
     return simplifiedRowsWithHeader.join('\n');
@@ -196,12 +203,12 @@ function asBankRowCsv(row: Row, extraColumns: string[]): string {
     row.description,
     row.credit,
     row.debit,
-    "'" + row.id,
+    `'${row.id}`,
     row.status,
     categoryName,
   ];
   const csvExtraRow = extraColumns.map((i) =>
-    categoryName === i ? row.amount : ''
+    categoryName === i ? row.amount : '',
   );
   const csvRow = [...csvDefaultRow, ...csvExtraRow];
   return toCSV(csvRow);
@@ -334,7 +341,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
     const headers = [...defaultHeaders, ...extraColumns];
     const header = [toCSV(headers)];
     const rows = qifToRowsWithIds(qif).map((row) =>
-      asBankRowCsv(row, extraColumns)
+      asBankRowCsv(row, extraColumns),
     );
     const headerAndRows = [...header, ...rows];
     const csv = headerAndRows.join('\n');
@@ -386,7 +393,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   const qifToExpenseGroupCsv = (qif: string): string => {
     const expenseCategories = conf.categories.filter(
-      (value) => value.category === 'DEBIT'
+      (value) => value.category === 'DEBIT',
     );
     const rows = qifToRowsWithIds(qif);
     const results = expenseCategories.map(filterGroupByCategory(rows));
@@ -396,7 +403,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   const qifToExpenseSummaryCsv = (qif: string): string => {
     const expenseCategories = conf.categories.filter(
-      (value) => value.category === DEBIT
+      (value) => value.category === DEBIT,
     );
     const rows = qifToRowsWithIds(qif);
     const results = expenseCategories.map(filterDebitByCategory(rows));
@@ -427,7 +434,7 @@ export const picoAccountancy = (conf: AccountancyModel) => {
 
   const qifToCreditSummaryCsv = (qif: string): string => {
     const creditCategories = conf.categories.filter(
-      (value) => value.category === CREDIT
+      (value) => value.category === CREDIT,
     );
     const rows = qifToRowsWithIds(qif);
     const results = creditCategories.map(filterCreditByCategory(rows));
