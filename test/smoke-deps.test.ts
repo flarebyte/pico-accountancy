@@ -11,7 +11,8 @@ test('commander: parses simple option', () => {
   program.exitOverride();
   program.allowUnknownOption();
   program.option('--name <name>');
-  program.parse(['node', 'cli', '--name', 'demo'], { from: 'user' });
+  // Commander v14 expects only user arguments when using { from: 'user' }.
+  program.parse(['--name', 'demo'], { from: 'user' });
   const opts = program.opts<{ name?: string }>();
   assert.equal(opts.name, 'demo');
 });
