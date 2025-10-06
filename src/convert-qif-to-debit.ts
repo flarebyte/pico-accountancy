@@ -26,6 +26,6 @@ export const commandQifToDebit = async (
 
   await writeText(
     destination,
-    accountancy.qifToExpenseSummaryCsv(qifContent) + '\n',
+    `${accountancy.qifToExpenseSummaryCsv(qifContent)}\n`,
   );
 };

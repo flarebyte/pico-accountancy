@@ -25,6 +25,6 @@ export const commandQifToBank = async (
   const accountancy = picoAccountancy(ruleModel);
   await writeText(
     destination,
-    accountancy.qifToBankCsv(qifContent, opts.columns || []) + '\n',
+    `${accountancy.qifToBankCsv(qifContent, opts.columns || [])}\n`,
   );
 };

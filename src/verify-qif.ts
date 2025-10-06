@@ -20,5 +20,5 @@ export const commandVerifyQif = async (
     opts,
   );
   const accountancy = picoAccountancy(ruleModel);
-  await writeText(destination, accountancy.verifyQif(qifContent) + '\n');
+  await writeText(destination, `${accountancy.verifyQif(qifContent)}\n`);
 };

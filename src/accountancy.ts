@@ -129,7 +129,7 @@ const filterGroupByCategory =
       return cat.name;
     }
     const simplifiedRows = filtered.map((row) =>
-      toCSV(['', "'" + row.id, row.debit]),
+      toCSV(['', `'${row.id}`, row.debit]),
     );
     const simplifiedRowsWithHeader = [cat.name, ...simplifiedRows];
     return simplifiedRowsWithHeader.join('\n');
@@ -203,7 +203,7 @@ function asBankRowCsv(row: Row, extraColumns: string[]): string {
     row.description,
     row.credit,
     row.debit,
-    "'" + row.id,
+    `'${row.id}`,
     row.status,
     categoryName,
   ];

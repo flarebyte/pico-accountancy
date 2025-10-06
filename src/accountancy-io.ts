@@ -21,7 +21,7 @@ export type StringSavingStatus = Result<
 >;
 
 export const readJson = async (filename: string): Promise<LoadingStatus> => {
-  let content;
+  let content: string;
   try {
     content = await fs.readFile(filename, { encoding: 'utf8' });
   } catch {

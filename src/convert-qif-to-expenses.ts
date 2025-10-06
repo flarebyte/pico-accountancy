@@ -26,6 +26,6 @@ export const commandQifToExpenses = async (
 
   await writeText(
     destination,
-    accountancy.qifToExpenseGroupCsv(qifContent) + '\n',
+    `${accountancy.qifToExpenseGroupCsv(qifContent)}\n`,
   );
 };
