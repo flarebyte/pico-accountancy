@@ -1,4 +1,6 @@
-model: {}
+model:
+  project:
+    version: 0.4.0
 workflows:
   test:
     title: Test the library

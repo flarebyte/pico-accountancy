@@ -1,7 +1,7 @@
 {
   "name": "pico-accountancy",
   "description": "Accountancy script for very simple cases",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Olivier Huin",
     "url": "https://github.com/olih"
