@@ -21,7 +21,7 @@ export const stringy = {
     .min(1)
     .max(60)
     .refine(isSingleLine, {
-        error: 'title should be a single line'
+      error: 'title should be a single line',
     })
     .describe('A short title that summarizes the category'),
   creditCategory: z
@@ -34,7 +34,7 @@ export const stringy = {
     .min(1)
     .max(60)
     .refine(isSingleLine, {
-        error: 'about should be a single line'
+      error: 'about should be a single line',
     })
     .describe('What the rule is about'),
 };
