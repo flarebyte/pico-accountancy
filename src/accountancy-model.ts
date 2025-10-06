@@ -9,29 +9,23 @@ import { stringy } from './field-validation.js';
 import { formatMessage, type ValidationError } from './format-message.js';
 import { fail, type Result, succeed } from './railway.js';
 
-const category = z
-  .object({
+const category = z.strictObject({
     name: stringy.name,
     title: stringy.title,
     category: stringy.creditCategory,
   })
-  .strict()
   .describe('A category of financial transaction');
 
-const rule = z
-  .object({
+const rule = z.strictObject({
     ifContains: stringy.term,
     about: stringy.about,
     category: category,
   })
-  .strict()
   .describe('Describe an extraction rule');
-export const schema = z
-  .object({
+export const schema = z.strictObject({
     categories: z.array(category).describe('A list of accounting categories'),
     rules: z.array(rule).describe('A list of rules to describe the extraction'),
   })
-  .strict()
   .describe(
     'The rules and categories using for processing the accounting data',
   );
