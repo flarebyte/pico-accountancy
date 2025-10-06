@@ -1,32 +1,36 @@
+/**
+ * Responsibilities:
+ * - Define the Accountancy model (categories, rules) with zod schemas.
+ * - Validate and parse configuration content, returning Result types.
+ * - Export inferred types and schema accessors for external use.
+ */
 import { z } from 'zod';
 import { stringy } from './field-validation.js';
-import { formatMessage, ValidationError } from './format-message.js';
-import { Result, succeed, fail } from './railway.js';
+import { formatMessage, type ValidationError } from './format-message.js';
+import { fail, type Result, succeed } from './railway.js';
+
 const category = z
-  .object({
+  .strictObject({
     name: stringy.name,
     title: stringy.title,
     category: stringy.creditCategory,
   })
-  .strict()
   .describe('A category of financial transaction');
 
 const rule = z
-  .object({
+  .strictObject({
     ifContains: stringy.term,
     about: stringy.about,
     category: category,
   })
-  .strict()
   .describe('Describe an extraction rule');
 export const schema = z
-  .object({
+  .strictObject({
     categories: z.array(category).describe('A list of accounting categories'),
     rules: z.array(rule).describe('A list of rules to describe the extraction'),
   })
-  .strict()
   .describe(
-    'The rules and categories using for processing the accounting data'
+    'The rules and categories using for processing the accounting data',
   );
 
 export type AccountancyModel = z.infer<typeof schema>;
@@ -41,7 +45,7 @@ export type AccountancyModelValidation = Result<
 >;
 
 export const safeParseBuild = (
-  content: unknown
+  content: unknown,
 ): AccountancyModelValidation => {
   const result = schema.safeParse(content);
   if (result.success) {

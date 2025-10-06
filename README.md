@@ -13,6 +13,8 @@ status](https://github.com/flarebyte/pico-accountancy/actions/workflows/main.yml
 CLI tool for converting a QIF bank statement to the different csv files
 useful for accountancy
 
+![Hero image for pico-accountancy](pico-accountancy-hero-512.jpeg)
+
 Highlights:
 
 -   Written in `Typescript`

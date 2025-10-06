@@ -1,7 +1,13 @@
-import { writeText } from './accountancy-io.js';
+/**
+ * Responsibilities:
+ * - CLI command to convert a QIF file into a bank-style CSV.
+ * - Supports optional extra columns to highlight category totals.
+ */
+
 import { picoAccountancy } from './accountancy.js';
+import { writeText } from './accountancy-io.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';
-import { CommandQifToTargetRunOpts } from './model.js';
+import type { CommandQifToTargetRunOpts } from './model.js';
 
 /**
  *  bank --columns 'Rent,Hosting,Legal,Shares,Interest,Invoices'
@@ -9,16 +15,16 @@ import { CommandQifToTargetRunOpts } from './model.js';
 export const commandQifToBank = async (
   source: string,
   destination: string,
-  opts: CommandQifToTargetRunOpts
+  opts: CommandQifToTargetRunOpts,
 ) => {
   const { qifContent, ruleModel } = await loadAccountancyFiles(
     source,
     destination,
-    opts
+    opts,
   );
   const accountancy = picoAccountancy(ruleModel);
   await writeText(
     destination,
-    accountancy.qifToBankCsv(qifContent, opts.columns || []) + '\n'
+    `${accountancy.qifToBankCsv(qifContent, opts.columns || [])}\n`,
   );
 };

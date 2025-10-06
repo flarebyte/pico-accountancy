@@ -52,9 +52,7 @@
   "error-message-id": {
     "scope": "javascript,typescript",
     "prefix": "error-message-id",
-    "body": [
-      "($RANDOM)"
-    ],
+    "body": ["($RANDOM)"],
     "description": "Generate an error message id"
   },
   "add decision": {

@@ -24,18 +24,11 @@
               },
               "category": {
                 "type": "string",
-                "enum": [
-                  "DEBIT",
-                  "CREDIT"
-                ],
+                "enum": ["DEBIT", "CREDIT"],
                 "description": "Credit or Debit category"
               }
             },
-            "required": [
-              "name",
-              "title",
-              "category"
-            ],
+            "required": ["name", "title", "category"],
             "additionalProperties": false,
             "description": "A category of financial transaction"
           },
@@ -62,21 +55,14 @@
                 "$ref": "#/definitions/pico-accountancy-schema/properties/categories/items"
               }
             },
-            "required": [
-              "ifContains",
-              "about",
-              "category"
-            ],
+            "required": ["ifContains", "about", "category"],
             "additionalProperties": false,
             "description": "Describe an extraction rule"
           },
           "description": "A list of rules to describe the extraction"
         }
       },
-      "required": [
-        "categories",
-        "rules"
-      ],
+      "required": ["categories", "rules"],
       "additionalProperties": false,
       "description": "The rules and categories using for processing the accounting data"
     }

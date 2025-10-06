@@ -1,7 +1,13 @@
-import { writeText } from './accountancy-io.js';
+/**
+ * Responsibilities:
+ * - CLI command to compute overall debit and credit totals from QIF.
+ * - Writes a short text summary report to the destination path.
+ */
+
 import { picoAccountancy } from './accountancy.js';
+import { writeText } from './accountancy-io.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';
-import { CommandQifToTargetRunOpts } from './model.js';
+import type { CommandQifToTargetRunOpts } from './model.js';
 
 /**
  * Check that sum are consistent
@@ -9,12 +15,12 @@ import { CommandQifToTargetRunOpts } from './model.js';
 export const commandQifToTotal = async (
   source: string,
   destination: string,
-  opts: CommandQifToTargetRunOpts
+  opts: CommandQifToTargetRunOpts,
 ) => {
   const { qifContent, ruleModel } = await loadAccountancyFiles(
     source,
     destination,
-    opts
+    opts,
   );
   const accountancy = picoAccountancy(ruleModel);
 

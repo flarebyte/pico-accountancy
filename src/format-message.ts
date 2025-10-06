@@ -1,18 +1,43 @@
-import { z } from 'zod';
+/**
+ * Responsibilities:
+ * - Convert zod issues into concise, human-readable validation messages.
+ * - Provide a typed shape for formatted validation errors.
+ * - Support Zod v3 and v4 issue codes (backward compatible mapping).
+ */
+import type { z } from 'zod';
+
+type IssueExtra = {
+  expected?: unknown;
+  received?: unknown;
+  validation?: unknown;
+  options?: unknown[];
+  key?: string;
+  unionErrors?: Array<{ issues?: Array<{ message: string }> }>;
+  type?: string;
+  maximum?: unknown;
+  minimum?: unknown;
+};
 
 export interface ValidationError {
   message: string;
   path: string;
 }
+const asList = (value: unknown): string => {
+  if (Array.isArray(value)) return value.join(', ');
+  return String(value);
+};
+
 export const formatMessage = (issue: z.ZodIssue): ValidationError => {
   const path = issue.path.join('.');
-  switch (issue.code) {
+  const code = issue.code as string;
+  const i = issue as z.ZodIssue & IssueExtra;
+  switch (code) {
     case 'invalid_type':
       return {
         path,
         message: [
           'The type for the field is invalid',
-          `I would expect ${issue.expected} instead of ${issue.received}`,
+          `I would expect ${i.expected} instead of ${i.received}`,
         ].join('; '),
       };
     case 'invalid_string':
@@ -20,26 +45,45 @@ export const formatMessage = (issue: z.ZodIssue): ValidationError => {
         path,
         message: [
           'The string for the field is invalid',
-          `${issue.message} and ${issue.validation}`,
+          `${issue.message}${i.validation ? ` and ${i.validation}` : ''}`,
         ].join('; '),
       };
-
+    // Consolidate enum/literal invalids under v4 'invalid_value'
+    case 'invalid_value':
     case 'invalid_enum_value':
+    case 'invalid_literal': {
+      const expected = i.expected;
+      const options = i.options;
+      const received = i.received;
+      const expectation = options
+        ? `any of ${asList(options)}`
+        : expected !== undefined
+          ? `${expected}`
+          : 'a valid value';
+      const receivedInfo =
+        received !== undefined ? ` instead of ${received}` : '';
       return {
         path,
         message: [
-          'The enum for the field is invalid',
-          `I would expect any of ${issue.options} instead of ${issue.received}`,
+          'The value for the field is invalid',
+          `I would expect ${expectation}${receivedInfo}`,
+        ].join('; '),
+      };
+    }
+
+    case 'invalid_key':
+      return {
+        path,
+        message: [
+          'The object key is invalid',
+          `Problem with key ${i.key ?? '(unknown key)'}`,
         ].join('; '),
       };
 
-    case 'invalid_literal':
+    case 'invalid_element':
       return {
         path,
-        message: [
-          'The literal for the field is invalid',
-          `I would expect ${issue.expected}`,
-        ].join('; '),
+        message: ['The array element is invalid', issue.message].join('; '),
       };
 
     case 'invalid_union_discriminator':
@@ -47,7 +91,7 @@ export const formatMessage = (issue: z.ZodIssue): ValidationError => {
         path,
         message: [
           'The union discriminator for the object is invalid',
-          `I would expect any of ${issue.options}`,
+          `${i.options ? `I would expect any of ${asList(i.options)}` : ''}`,
         ].join('; '),
       };
     case 'invalid_union':
@@ -55,17 +99,23 @@ export const formatMessage = (issue: z.ZodIssue): ValidationError => {
         path,
         message: [
           'The union for the field is invalid',
-          `I would check ${issue.unionErrors
-            .flatMap((err) => err.issues)
-            .map((i) => i.message)}`,
+          `${(() => {
+            const unionErrors = i.unionErrors || [];
+            const messages = unionErrors
+              .flatMap((err) => (err?.issues ? err.issues : []))
+              .map((iss) => iss.message);
+            return messages.length
+              ? `I would check ${messages.join(', ')}`
+              : '';
+          })()}`,
         ].join('; '),
       };
     case 'too_big':
       return {
         path,
         message: [
-          `The ${issue.type} for the field is too big`,
-          `I would expect the maximum to be ${issue.maximum}`,
+          `The ${i.type} for the field is too big`,
+          `${i.maximum !== undefined ? `I would expect the maximum to be ${i.maximum}` : ''}`,
         ].join('; '),
       };
 
@@ -73,8 +123,8 @@ export const formatMessage = (issue: z.ZodIssue): ValidationError => {
       return {
         path,
         message: [
-          `The ${issue.type} for the field is too small`,
-          `I would expect the minimum to be ${issue.minimum}`,
+          `The ${i.type} for the field is too small`,
+          `${i.minimum !== undefined ? `I would expect the minimum to be ${i.minimum}` : ''}`,
         ].join('; '),
       };
 
