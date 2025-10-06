@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to group expenses by category with detailed rows.
+ * - Outputs a CSV grouping debit transactions under each category.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - Convert zod issues into concise, human-readable validation messages.
+ * - Provide a typed shape for formatted validation errors.
+ */
 import { z } from 'zod';
 
 export interface ValidationError {

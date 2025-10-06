@@ -1,3 +1,10 @@
+/**
+ * Responsibilities:
+ * - Core QIF processing engine: parse QIF lines into typed rows.
+ * - Normalize fields, apply categorization rules, and generate IDs.
+ * - Produce CSV outputs (bank, todo, debit/credit summaries and groups).
+ * - Compute totals and provide basic QIF integrity verification.
+ */
 import { AccountancyModel, Category, Rule } from './accountancy-model.js';
 import {
   normalizeDescription,

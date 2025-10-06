@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - File I/O helpers to read/write JSON and text files.
+ * - Return structured Result types with contextual error messages.
+ */
 import fs from 'node:fs/promises';
 import { Result, fail } from './railway.js';
 export type LoadingStatus = Result<

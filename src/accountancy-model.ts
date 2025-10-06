@@ -1,3 +1,9 @@
+/**
+ * Responsibilities:
+ * - Define the Accountancy model (categories, rules) with zod schemas.
+ * - Validate and parse configuration content, returning Result types.
+ * - Export inferred types and schema accessors for external use.
+ */
 import { z } from 'zod';
 import { stringy } from './field-validation.js';
 import { formatMessage, ValidationError } from './format-message.js';

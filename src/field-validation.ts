@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - Define reusable zod validators for common string fields.
+ * - Offer a simple safeParse helper for selected fields.
+ */
 import { z } from 'zod';
 
 const isSingleLine = (value: string) => value.split(/[\n\r]/).length <= 1;

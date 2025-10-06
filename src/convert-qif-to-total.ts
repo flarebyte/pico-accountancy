@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to compute overall debit and credit totals from QIF.
+ * - Writes a short text summary report to the destination path.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

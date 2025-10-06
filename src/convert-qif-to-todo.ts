@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to list transactions without matching rules.
+ * - Outputs a CSV of uncategorized items for rule authoring.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

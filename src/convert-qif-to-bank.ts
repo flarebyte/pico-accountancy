@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to convert a QIF file into a bank-style CSV.
+ * - Supports optional extra columns to highlight category totals.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

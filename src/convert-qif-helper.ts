@@ -1,3 +1,9 @@
+/**
+ * Responsibilities:
+ * - Load and validate the accountancy rule model from disk.
+ * - Load QIF content, enforce validation, and surface friendly errors.
+ * - Provide a single loader for conversion commands.
+ */
 import { readJson, readText } from './accountancy-io.js';
 import { AccountancyModel, safeParseBuild } from './accountancy-model.js';
 import { ValidationError } from './format-message.js';

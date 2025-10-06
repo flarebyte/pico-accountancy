@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to verify basic integrity of a QIF file.
+ * - Reports counts and consistency of dates, descriptions, and transactions.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

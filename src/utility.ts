@@ -1,3 +1,9 @@
+/**
+ * Responsibilities:
+ * - Utilities to normalize and format QIF fields (date, amount, description).
+ * - Provide CSV helpers, math helpers, and string utilities (dasherize, caps).
+ * - Export DEBIT/CREDIT helpers consumed by the core accountancy engine.
+ */
 import moment from 'moment';
 import { DEBIT, CREDIT } from './accountancy.js';
 

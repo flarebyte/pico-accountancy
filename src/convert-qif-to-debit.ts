@@ -1,3 +1,8 @@
+/**
+ * Responsibilities:
+ * - CLI command to summarize debits by category from a QIF file.
+ * - Writes a CSV with totals per debit category.
+ */
 import { writeText } from './accountancy-io.js';
 import { picoAccountancy } from './accountancy.js';
 import { loadAccountancyFiles } from './convert-qif-helper.js';

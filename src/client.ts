@@ -1,3 +1,9 @@
+/**
+ * Responsibilities:
+ * - Define the CLI surface (commands, options) using Commander.
+ * - Wire subcommands to conversion/verification handlers.
+ * - Handle execution, version reporting, and error-to-exit logic.
+ */
 import { Command } from 'commander';
 import { commandQifToBank } from './convert-qif-to-bank.js';
 import { commandQifToCredit } from './convert-qif-to-credit.js';
