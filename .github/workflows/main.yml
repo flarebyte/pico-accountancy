@@ -8,29 +8,61 @@ jobs:
     strategy:
       matrix:
         node:
-          - 18.x
+          - 22.x
         os:
-          - ubuntu-latest
           - macOS-latest
+          - ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: Installation
         run: yarn install
-      - name: Run zest unit tests
-        run: npx baldrick-broth test spec
+      - name: Unit tests
+        run: yarn test
+      - name: Coverage (c8)
+        run: yarn test:cov
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov-${{ matrix.os }}-${{ matrix.node }}
+          path: coverage/lcov.info
+      - name: Create temp folder
+        run: mkdir -p temp
       - name: Run pest integration tests
-        run: npx baldrick-broth test pest
+        run: |
+          if [ -d "pest-spec" ]; then
+            npx baldrick-broth@latest test pest
+          else
+            echo "No pest files. Skipping"
+          fi
       - name: Build
         run: yarn build
+      - name: Release readiness check
+        run: npx baldrick-dev-ts@latest release check
+      - name: Verify build entrypoints exist
+        run: >
+          set -e
+
+          for p in dist/cli.mjs dist/index.js; do
+            if [ ! -e "$p" ]; then
+              echo "Entrypoint missing: $p. Check tsconfig outDir/rootDir and package.json paths." >&2
+              exit 1
+            fi
+          done
+
+          echo "Entrypoints OK: dist/cli.mjs, dist/index.js"
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: always() && hashFiles('report/*.pest.mocha.json') != ''
+        continue-on-error: true
         with:
-          name: Pest 
+          name: Pest
           path: report/*.pest.mocha.json
           reporter: mocha-json
+          fail-on-empty: false
+          fail-on-error: false

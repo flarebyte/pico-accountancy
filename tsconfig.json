@@ -1,17 +1,15 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "ES2021",
+  "display": "ES2024",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "es2021"
-    ],
-    "module": "Node16",
+    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
+    "module": "nodenext",
     "moduleDetection": "force",
-    "moduleResolution": "Node16",
+    "moduleResolution": "node16",
     "newLine": "lf",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
@@ -24,14 +22,14 @@
     "resolveJsonModule": false,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2021",
-    "useDefineForClassFields": true,
-    "diagnostics": true,
-    "extendedDiagnostics": true
+    "target": "es2024",
+    "useDefineForClassFields": true
   },
   "ts-node": {
     "compilerOptions": {},
     "files": true,
     "transpileOnly": true
-  }
+  },
+  "include": ["src"],
+  "exclude": ["dist", "test", "spec", "pest-spec"]
 }
