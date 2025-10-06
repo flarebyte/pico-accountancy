@@ -6,8 +6,9 @@
  */
 import { z } from 'zod';
 import { stringy } from './field-validation.js';
-import { formatMessage, ValidationError } from './format-message.js';
-import { Result, succeed, fail } from './railway.js';
+import { formatMessage, type ValidationError } from './format-message.js';
+import { fail, type Result, succeed } from './railway.js';
+
 const category = z
   .object({
     name: stringy.name,
@@ -32,7 +33,7 @@ export const schema = z
   })
   .strict()
   .describe(
-    'The rules and categories using for processing the accounting data'
+    'The rules and categories using for processing the accounting data',
   );
 
 export type AccountancyModel = z.infer<typeof schema>;
@@ -47,7 +48,7 @@ export type AccountancyModelValidation = Result<
 >;
 
 export const safeParseBuild = (
-  content: unknown
+  content: unknown,
 ): AccountancyModelValidation => {
   const result = schema.safeParse(content);
   if (result.success) {

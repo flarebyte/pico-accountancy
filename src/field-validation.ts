@@ -36,7 +36,7 @@ export const stringy = {
 };
 export const safeParseField = (
   name: 'title' | 'filename' | string,
-  content: unknown
+  content: unknown,
 ) => {
   if (name === 'title') {
     return stringy.title.safeParse(content);

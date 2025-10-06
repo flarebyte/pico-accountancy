@@ -47,12 +47,12 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .option(
     '-c, --columns <target>',
     'Gives a list of columns separated by coma.',
-    commaSeparatedList
+    commaSeparatedList,
   )
   .action(commandQifToBank);
 
@@ -64,7 +64,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToTodo);
 
@@ -76,7 +76,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandVerifyQif);
 
@@ -88,7 +88,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToCredit);
 
@@ -100,7 +100,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToDebit);
 
@@ -112,7 +112,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToExpenses);
 
@@ -124,7 +124,7 @@ program
   .option(
     progInfo.rulespath.name,
     progInfo.rulespath.description,
-    'pico-accountancy.json'
+    'pico-accountancy.json',
   )
   .action(commandQifToTotal);
 

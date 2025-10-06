@@ -5,9 +5,9 @@
  * - Provide a single loader for conversion commands.
  */
 import { readJson, readText } from './accountancy-io.js';
-import { AccountancyModel, safeParseBuild } from './accountancy-model.js';
-import { ValidationError } from './format-message.js';
-import { CommandQifToTargetRunOpts } from './model.js';
+import { type AccountancyModel, safeParseBuild } from './accountancy-model.js';
+import type { ValidationError } from './format-message.js';
+import type { CommandQifToTargetRunOpts } from './model.js';
 import { andThen } from './railway.js';
 
 type RunConvertFailure =
@@ -22,18 +22,18 @@ type AccountancyDocs = {
 export const loadAccountancyFiles = async (
   source: string,
   _destination: string,
-  opts: CommandQifToTargetRunOpts
+  opts: CommandQifToTargetRunOpts,
 ): Promise<AccountancyDocs> => {
   console.log(JSON.stringify(opts));
   const readingResult = await readJson(opts.rulesPath);
   const modelResult = andThen<object, AccountancyModel, RunConvertFailure>(
-    safeParseBuild
+    safeParseBuild,
   )(readingResult);
 
   if (modelResult.status === 'failure') {
     console.error(
       `Loading and parsing the pico-accountancy configuration file ${opts.rulesPath} failed`,
-      modelResult.error
+      modelResult.error,
     );
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit
   }
@@ -42,7 +42,7 @@ export const loadAccountancyFiles = async (
   if (qifContent.status === 'failure') {
     console.error(
       `Loading the pico-accountancy QIF file ${source} failed`,
-      qifContent.error
+      qifContent.error,
     );
     process.exit(1); // eslint-disable-line  unicorn/no-process-exit
   }
