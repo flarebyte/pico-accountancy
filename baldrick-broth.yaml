@@ -1,43 +1,4 @@
-model:
-  project:
-    title: Accountancy script for very simple cases
-    description: CLI tool for converting a QIF bank statement to the different csv files useful for accountancy
-    version: 0.3.0
-    keywords:
-      - CLI
-      - Accountancy
-  readme:
-    highlights:
-      - Written in `Typescript`
-      - Understand QIF format
-      - Automatically convert rows based on search terms
-    links:
-      - "[Usage](USAGE.md)"
-    related:
-      - "[baldrick-zest-engine](https://github.com/flarebyte/baldrick-zest-engi\
-        ne) Run tests declaratively with a few cunning plans"
-  github:
-    account: flarebyte
-    name: pico-accountancy
-  copyright:
-    holder: Flarebyte.com
-    startYear: 2015
-  license: MIT
-  author:
-    name: Olivier Huin
-    url: https://github.com/olih
-  implementation:
-    tags:
-      - cli
-      - zest
-      - pest
-      - zod
-      - railway
-      - commander
-  workflow-version: 0.1.0
-  pest-filenames:
-    - cli-help
-    - cli
+model: {}
 workflows:
   test:
     title: Test the library
